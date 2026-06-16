@@ -105,7 +105,7 @@ body {
     font-weight: bold;
     cursor: pointer;
 }
-
+.search-btn,
 .save-btn,
 .copy-btn {
     width: 155px;
@@ -125,7 +125,10 @@ body {
 .copy-btn {
     background: #18a9e0;
 }
-
+.search-btn{
+    background: #0d18eb;
+}
+.search-btn:hover,
 .copy-btn:hover,
 .save-btn:hover {
     background: peru;
