@@ -83,3 +83,12 @@ $(function () {
 function openModal(row) {
     alert("수정/삭제 모달 연결 예정");
 }
+function list_up(){
+    // alert("모달")
+    $("#listModal").show();
+}
+
+
+function closeListModal(){
+    $("#listModal").hide();
+}

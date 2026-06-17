@@ -2,14 +2,14 @@
 <html lang="ko">
 
 <head>
-    <meta charset="UTF-8">
-    <title>현대제철 입고</title>
-
-    <link rel="stylesheet" href="./css/main.css">
+    <meta charset="UTF-8"> 
+    <link rel="stylesheet" href="{{url_for('static',filename='css/main.css')}}">
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
 
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <title>현대제철 입고</title>
 </head>
 
 <body>
@@ -68,13 +68,14 @@
                     <td>123가4567</td>
                     <td>HY-001</td>
                     <td>파랑색</td>
-                    <td>SD400</td>         
+                    <td>SD400</td>
                     <td>D25</td>
                     <td>50</td>
                     <td>102.350</td>
                     <td>2.047</td>
                     <td>A-01</td>
-                    <td class="ellipsis" title="2026-06-16 08:30">2026-06-16 08:30</td></td>
+                    <td class="ellipsis" title="2026-06-16 08:30">2026-06-16 08:30</td>
+                    </td>
                     <td></td>
                 </tr>
                 <tr ondblclick="openModal(this)">
@@ -90,17 +91,15 @@
                     <td>102.350</td>
                     <td>2.047</td>
                     <td>A-01</td>
-                    <td class="ellipsis" title="2026-06-16 08:30">2026-06-16 08:30</td></td>
+                    <td class="ellipsis" title="2026-06-16 08:30">2026-06-16 08:30</td>
+                    </td>
                     <td></td>
                 </tr>
             </tbody>
         </table>
 
         <div class="guide">※ 행 더블클릭 : 수정 / 삭제</div>
-
     </div>
-
-    <script src="./js/main.js"></script>
 </body>
 
 </html>

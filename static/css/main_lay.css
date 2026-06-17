@@ -1,0 +1,229 @@
+* {
+    box-sizing: border-box;
+}
+a{
+    text-decoration: none;
+    cursor: pointer;
+}
+a:hover{
+    font-weight: bold;
+    color: white;
+}
+body {
+    margin: 0;
+    background: #e9e9e9;
+    font-family: "맑은 고딕", sans-serif;
+}
+
+.layout {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* 헤더 */
+.header {
+    height: 84px;
+    flex-shrink: 0;
+    display: grid;
+    grid-template-columns: 220px 1fr 120px;
+    align-items: center;
+    padding: 0 34px;
+    background: #0F5D8A;
+}
+
+.date-box {
+    height: 52px;
+    line-height: 52px;
+    text-align: center;
+    background: #176988;
+    color: white;
+    font-size: 22px;
+    border: 2px solid #06384d;
+}
+
+.nav {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.nav button {
+    width: 118px;
+    height: 54px;
+    background: #176988;
+    color: white;
+    font-size: 21px;
+    border: 2px solid #06384d;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.home-btn {
+    width: 90px;
+    height: 60px;
+    line-height: 60px;
+    text-align: center;
+    text-decoration: none;
+    color: #006699;
+    background: white;
+    border: 1px solid #176988;
+    border-radius: 10px;
+    font-weight: bold;
+}
+
+/* 본문 */
+.content {
+    flex: 1;
+    min-height: 0;
+    display: grid;
+    grid-template-rows: 1fr 1fr;
+    gap: 14px;
+    padding: 12px;
+    overflow: hidden;
+}
+
+.company-area {
+    min-height: 0;
+    background: white;
+    border-radius: 8px;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 2px 6px rgba(0,0,0,.12);
+}
+
+.hyundai-area {
+    border-top: 7px solid #176988;
+}
+
+.dongkuk-area {
+    border-top: 7px solid #ed6d2f;
+}
+
+/* 회사 정보바 */
+.company-info {
+    display: grid;
+    grid-template-columns: 120px 140px 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 8px;
+    align-items: center;
+}
+
+.company-label,
+.plan-label,
+.stock-label {
+    height: 48px;
+    line-height: 48px;
+    text-align: center;
+    color: white;
+    border-radius: 7px;
+    font-size: 25px;
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.hyundai-label,
+.hyundai-area .plan-label {
+    background: #9ED68D;
+}
+
+.hyundai-area .stock-label {
+    background: #1E6F94;
+}
+
+.dongkuk-label,
+.dongkuk-area .plan-label,
+.dongkuk-area .stock-label {
+    background: #ed6d2f;
+}
+
+/* 테이블 스크롤 */
+.table-scroll {
+    flex: 1;
+    min-height: 0;
+    overflow: auto;
+    border: 1px solid #ddd;
+}
+
+/* 테이블 */
+table {
+    width: 100%;
+    min-width: 1500px;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+th {
+    height: 44px;
+    background: #43A326;
+    color: white;
+    font-size: 22px;
+    border: 1px solid white;
+    white-space: nowrap;
+}
+
+td {
+    height: 40px;
+    text-align: center;
+    font-size: 18px;
+    border: 1px solid white;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.hyundai-area tbody tr:nth-child(odd) td {
+    background: #EDF6EB;
+}
+
+.hyundai-area tbody tr:nth-child(even) td {
+    background: #DDEFD5;
+}
+
+.dongkuk-area th {
+    background: #ed6d2f;
+}
+
+.dongkuk-area tbody tr:nth-child(odd) td {
+    background: #FBE8DF;
+}
+
+.dongkuk-area tbody tr:nth-child(even) td {
+    background: #F7D9CC;
+}
+
+/* 푸터 */
+.footer {
+    height: 36px;
+    flex-shrink: 0;
+    line-height: 36px;
+    text-align: center;
+    background: #176988;
+    color: white;
+    font-size: 15px;
+}
+
+.modal{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.45);
+    z-index:9999;
+}
+
+.modal-box{
+    width:1500px;
+    height:800px;
+    background:white;
+    border-radius:12px;
+    padding:20px;
+
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform:translate(-50%, -50%);
+}

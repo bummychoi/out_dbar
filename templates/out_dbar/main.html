@@ -1,0 +1,175 @@
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{{url_for('static',filename='css/main_lay.css')}}">
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+    <script src="{{ url_for('static', filename='/js/main.js') }}"></script>
+    <title>수출철근 입출고</title>
+</head>
+
+
+<body>
+
+    <div class="layout">
+
+        <header class="header">
+            <div class="date-box">2026-06-17</div>
+
+            <nav class="nav">
+                <button onclick="list_up()">목록생성</button>
+                <button>입고</button>
+                <button>선적</button>
+                <button>반품</button>
+            </nav>
+
+            <a href="#" class="home-btn">HOME</a>
+        </header>
+
+        <main class="content">
+
+            <section class="company-area hyundai-area">
+                <div class="company-title hyundai-title">
+                    <div class="company-info">
+
+                        <div class="company-label hyundai-label">
+                            <a href="#">현대제철</a>
+                        </div>
+
+                        <div class="plan-label">
+                            예정 3모선
+                        </div>
+                        <div class="stock-label" style="color: red;">
+                            총재고 000B/D 000,000 M/T
+                        </div>
+
+                        <div class="stock-label">
+                            재고 000B/D 000,000 M/T
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="table-scroll">
+
+                    <table>
+
+                        <thead>
+                            <tr>
+                                <th>순번</th>
+                                <th>입고일자</th>
+                                <th>주야</th>
+                                <th>차량번호</th>
+                                <th>선적명</th>
+                                <th>단면색</th>
+                                <th>강종</th>
+                                <th>사이즈</th>
+                                <th>번들</th>
+                                <th>톤수</th>
+                                <th>단중</th>
+                                <th>저장구역</th>
+                                <th>저장일시</th>
+                                <th>비고</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <tr ondblclick="openModal(this)">
+                                <td>1</td>
+                                <td>2026-06-16</td>
+                                <td>주간</td>
+                                <td>123가4567</td>
+                                <td>HY-001</td>
+                                <td>파랑색</td>
+                                <td>SD400</td>
+                                <td>D25</td>
+                                <td>50</td>
+                                <td>102.350</td>
+                                <td>2.047</td>
+                                <td>A-01</td>
+                                <td>2026-06-16 08:30</td>
+                                <td></td>
+                            </tr>
+                        </tbody>
+
+                    </table>
+
+                </div>
+            </section>
+
+            <section class="company-area dongkuk-area">
+                <div class="company-title dongkuk-title">
+                    <div class="company-info">
+
+                        <div class="company-label dongkuk-label">
+                            <a href="#">동국제강</a>
+                        </div>
+
+                        <div class="plan-label dongkuk-plan">
+                            예정 2모선
+                        </div>
+
+                        <div class="stock-label">
+                            재고 000B/D 000,000 M/T
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="table-scroll">
+                    <table>
+                        <tr>
+                            <th>순번</th>
+                            <th>입고일자</th>
+                            <th>주야</th>
+                            <th>차량번호</th>
+                            <th>선적명</th>
+                            <th>강종</th>
+                            <th>사이즈</th>
+                            <th>번들</th>
+                            <th>톤수</th>
+                            <th>단중</th>
+                            <th>저장구역</th>
+                            <th>저장일시</th>
+                            <th>비고</th>
+                        </tr>
+                        </thead>
+
+                        <tbody>
+                            <tr ondblclick="openModal(this)">
+                                <td>1</td>
+                                <td class="in-date">2026-06-16</td>
+                                <td>주간</td>
+                                <td>123가4567</td>
+                                <td>HY-001</td>
+                                <td>SD400</td>
+                                <td>D25</td>
+                                <td>50</td>
+                                <td>102.350</td>
+                                <td>2.047</td>
+                                <td>A-01</td>
+                                <td class="ellipsis" title="2026-06-16 08:30">2026-06-16 08:30</td>
+                                </td>
+                                <td></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+
+        <footer class="footer">
+            OUT_DBAR 입고 현황 시스템
+        </footer>
+    </div>
+
+
+    <div id="listModal" class="modal">
+    <div class="modal-box">
+        <h2>목록생성</h2>
+
+        <button onclick="closeListModal()">닫기</button>
+    </div>
+</div>
+</body>

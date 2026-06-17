@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8"> 
+    <link rel="stylesheet" href="{{url_for('static',filename='css/main.css')}}">
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <title>동국제강 입고</title>
+</head>
+
+<body>
+
+    <div class="page">
+
+        <div class="top">
+            <a href="#" class="home-btn">
+                <span id="home-btn">🏠</span>
+                <span>HOME</span>
+            </a>
+            <button class="title-btn">동국제강 입고</button>
+
+            <div class="shift-box">
+                <label><input type="radio" name="shift" value="주간" checked> 주간</label>
+                <label><input type="radio" name="shift" value="야간"> 야간</label>
+            </div>
+
+            <div class="date-box">
+                <button class="arrow" id="prevDay">◀</button>
+                <input type="text" id="datePicker">
+                <span id="dateText"></span>
+                <button class="arrow" id="nextDay">▶</button>
+            </div>
+            <button class="save-btn">저장</button>
+            <button class="copy-btn">복사</button>
+            <!-- <input>
+            <button class="search-btn">조회</button> -->
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>순번</th>
+                    <th>입고일자</th>
+                    <th>주야</th>
+                    <th>차량번호</th>
+                    <th>선적명</th>
+                    <th>단면색</th>
+                    <th>강종</th>
+                    <th>사이즈</th>
+                    <th>번들</th>
+                    <th>톤수</th>
+                    <th>단중</th>
+                    <th>저장구역</th>
+                    <th>저장일시</th>
+                    <th>비고</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr ondblclick="openModal(this)">
+                    <td>1</td>
+                    <td class="in-date">2026-06-16</td>
+                    <td>주간</td>
+                    <td>123가4567</td>
+                    <td>HY-001</td>
+                    <td>파랑색</td>
+                    <td>SD400</td>
+                    <td>D25</td>
+                    <td>50</td>
+                    <td>102.350</td>
+                    <td>2.047</td>
+                    <td>A-01</td>
+                    <td class="ellipsis" title="2026-06-16 08:30">2026-06-16 08:30</td>
+                    </td>
+                    <td></td>
+                </tr>
+                <tr ondblclick="openModal(this)">
+                    <td>2</td>
+                    <td class="in-date">2026-06-16</td>
+                    <td>주간</td>
+                    <td>123가4567</td>
+                    <td>HY-001</td>
+                    <td>노란색</td>
+                    <td>SD400</td>
+                    <td>D25</td>
+                    <td>50</td>
+                    <td>102.350</td>
+                    <td>2.047</td>
+                    <td>A-01</td>
+                    <td class="ellipsis" title="2026-06-16 08:30">2026-06-16 08:30</td>
+                    </td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="guide">※ 행 더블클릭 : 수정 / 삭제</div>
+    </div>
+</body>
+
+</html>
