@@ -10,6 +10,8 @@ out_dbar_bp = Blueprint(
 @out_dbar_bp.route("/")
 def main():
     return render_template("out_dbar/main.html")
+
+    
 # 리스트 입력창
 @out_dbar_bp.route("/list_up")
 def list_up():

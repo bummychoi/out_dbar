@@ -83,11 +83,21 @@ $(function () {
 function openModal(row) {
     alert("수정/삭제 모달 연결 예정");
 }
-function list_up(){
-    // alert("모달")
-    $("#listModal").show();
-}
 
+function list_up(){
+
+    let w = screen.availWidth * 0.7;
+    let h = screen.availHeight * 0.7;
+
+    let left = (screen.availWidth - w) / 2;
+    let top = (screen.availHeight - h) / 2;
+
+    window.open(
+        "/out_dbar/list_up",
+        "list_up",
+        `width=${w},height=${h},left=${left},top=${top}`
+    );
+}
 
 function closeListModal(){
     $("#listModal").hide();

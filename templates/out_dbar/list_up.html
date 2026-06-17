@@ -1,1 +1,73 @@
-list
+<script src="{{ url_for('static', filename='/js/input_form.js') }}"></script>
+<!-- <link rel="stylesheet" href="{{url_for('static',filename='css/main_lay.css')}}"> -->
+<link rel="stylesheet" href="{{url_for('static',filename='css/list_up.css')}}">
+
+
+<div class="vessel-header">
+    <label>회사</label>
+    <select id="company" onchange="changeCompany()">
+        <option value="hyundai">현대제철</option>
+        <option value="dongkuk">동국제강</option>
+    </select>
+
+    <label>선적월</label>
+    <input type="month" id="ship_month">
+
+    <label>선적명</label>
+    <input type="text" id="vessel_name">
+
+    <button class="btn-add" onclick="addRow()">
+        + 행추가
+    </button>
+
+    <button class="btn-save" onclick="savePlan()">
+        💾 저장
+    </button>
+    <button class="btn-cancel" onclick="closePopup()">
+        X 취소
+    </button>
+</div>
+
+<table id="detailTable" class="detail-table">
+
+    <thead>
+        <tr>
+            <th class="color-col">단면색</th>
+            <th>강종</th>
+            <th>길이</th>
+            <th>번들</th>
+            <th>톤수</th>
+            <th>삭제</th>
+        </tr>
+    </thead>
+
+    <tbody>
+
+        <tr>
+            <td class="color-col">
+                <input type="text">
+            </td>
+            <td><input></td>
+            <td><input></td>
+            <td><input></td>
+            <td><input></td>
+            <td>
+                <button class="del_btn"><span>삭제</span></button>
+            </td>
+        </tr>
+
+    </tbody>
+
+</table>
+
+<div class="summary-box">
+
+    <div class="summary-item">
+        총 번들 : <span id="total_bundle">0</span>
+    </div>
+
+    <div class="summary-item">
+        총 톤수 : <span id="total_weight">0.000</span>
+    </div>
+
+</div>

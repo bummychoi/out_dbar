@@ -59,7 +59,10 @@ body {
     border-radius: 8px;
     cursor: pointer;
 }
-
+.nav button:hover{
+    background: #136388;
+    color: red;
+}
 .home-btn {
     width: 90px;
     height: 60px;
@@ -161,7 +164,7 @@ th {
     height: 44px;
     background: #43A326;
     color: white;
-    font-size: 22px;
+    font-size: 25px;
     border: 1px solid white;
     white-space: nowrap;
 }
@@ -169,13 +172,27 @@ th {
 td {
     height: 40px;
     text-align: center;
-    font-size: 18px;
+    font-size: 25px;
     border: 1px solid white;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
+
+
+/* 순번 */
+th:nth-child(1),
+td:nth-child(1){
+    width:50px;
+}
+/* 선명 */
+
+td:nth-child(3){
+    width:300px;
+     font-size: 18px;
+
+}
 .hyundai-area tbody tr:nth-child(odd) td {
     background: #EDF6EB;
 }

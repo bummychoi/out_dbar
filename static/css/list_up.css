@@ -1,0 +1,338 @@
+*{
+    box-sizing:border-box;
+}
+
+/* =========================
+   입력폼
+========================= */
+
+body{
+    margin:0;
+    background:#e9e9e9;
+    font-family:"맑은 고딕", sans-serif;
+}
+
+.form-wrap{
+    max-width:1400px;
+    width:100%;
+    margin:20px auto;
+    padding:20px;
+    background:white;
+    border-radius:10px;
+    box-shadow:0 2px 10px rgba(0,0,0,.15);
+}
+
+.form-title{
+    font-size:32px;
+    font-weight:bold;
+    color:#176988;
+    margin-bottom:20px;
+}
+/* 상세테이블 */
+.detail-wrap{
+    width:100%;
+    height:600px;
+    border:1px solid #ccc;
+    overflow:auto;
+    background:white;
+}
+
+table,
+.detail-table{
+    width:100%;
+    min-width:1150px;
+    border-collapse:collapse;
+    table-layout:fixed;
+}
+
+table th,
+.detail-table th{
+    background:#43a326;
+    color:white;
+    height:55px;
+    font-size:24px;
+    border:1px solid #d8ead0;
+    text-align:center;
+    white-space:nowrap;
+}
+
+table td,
+.detail-table td{
+    height:45px;
+    border:1px solid #e5e5e5;
+    background:#f8fbf7;
+    text-align:center;
+}
+
+table input,
+.detail-table input{
+    width:96%;
+    height:34px;
+    border:1px solid #999;
+    outline:none;
+    background:white;
+    text-align:center;
+    font-size:18px;
+}
+
+/* 삭제 버튼 */
+table button,
+.detail-table button{
+    height:28px;
+    font-size:14px;
+}
+
+/* 합계 */
+.summary-box{
+    margin-top:15px;
+    display:flex;
+    justify-content:flex-end;
+    gap:15px;
+}
+
+.summary-item{
+    width:220px;
+    height:43px;
+    line-height:43px;
+    text-align:center;
+    background:#176988;
+    color:white;
+    font-size:20px;
+    border-radius:6px;
+}
+/* =========================
+   선적정보
+========================= */
+
+.vessel-header{
+    display:flex;
+    gap:10px;
+    align-items:center;
+    margin-bottom:20px;
+    flex-wrap:nowrap;
+}
+
+.vessel-header label{
+    width:90px;
+    min-width:90px;
+    height:50px;
+    line-height:50px;
+    background:#176988;
+    color:white;
+    text-align:center;
+    font-size:20px;
+    border-radius:6px;
+}
+
+.vessel-header input,
+.vessel-header select{
+    height:50px;
+    padding:0 10px;
+    font-size:20px;
+    border:1px solid #ccc;
+    border-radius:6px;
+}
+
+#company{
+    width:190px;
+    min-width:190px;
+}
+
+#ship_month{
+    width:180px;
+    min-width:180px;
+}
+
+#vessel_name{
+    flex:1;
+    min-width:250px;
+}
+
+/* =========================
+   버튼
+========================= */
+
+.btn-add,
+.btn-save{
+    width:80px;
+    min-width:80px;
+    height:50px;
+    border:none;
+    color:white;
+    font-size:17px;
+    border-radius:6px;
+    cursor:pointer;
+}
+
+.btn-add{
+    background:#43a326;
+}
+
+.btn-save{
+    background:#ed6d2f;
+}
+
+.btn-add:hover{
+    background:#2f8b16;
+}
+
+.btn-save:hover{
+    background:#d75a20;
+}
+
+/* =========================
+   상세테이블
+========================= */
+
+.detail-wrap{
+    width:100%;
+    height:600px;
+    border:1px solid #ccc;
+    overflow:auto;
+}
+
+.detail-table{
+    width:100%;
+    min-width:1150px;
+    border-collapse:collapse;
+    table-layout:fixed;
+}
+
+.detail-table th{
+    background:#43a326;
+    color:white;
+    height:60px;
+    font-size:28px;
+    border:1px solid #d8ead0;
+    white-space:nowrap;
+}
+
+.detail-table td{
+    height:60px;
+    border:1px solid #e5e5e5;
+    background:#f8fbf7;
+    text-align:center;
+}
+
+.detail-table input{
+    width:98%;
+    height:48px;
+    border:none;
+    outline:none;
+    background:transparent;
+    text-align:center;
+    font-size:22px;
+    font-weight:500;
+}
+
+/* 컬럼 폭 */
+.detail-table th:nth-child(1),
+.detail-table td:nth-child(1){
+    width:180px;
+}
+
+.detail-table th:nth-child(2),
+.detail-table td:nth-child(2){
+    width:170px;
+}
+
+.detail-table th:nth-child(3),
+.detail-table td:nth-child(3){
+    width:160px;
+}
+
+.detail-table th:nth-child(4),
+.detail-table td:nth-child(4){
+    width:160px;
+}
+
+.detail-table th:nth-child(5),
+.detail-table td:nth-child(5){
+    width:160px;
+}
+
+.detail-table th:nth-child(6),
+.detail-table td:nth-child(6){
+    width:120px;
+}
+.del_btn{
+    border: none;
+    background: inherit;
+    cursor: pointer;
+    padding-bottom: 15px;
+}
+.del_btn span{
+    font-size: 25px;
+    color:red;
+}
+/* =========================
+   합계
+========================= */
+
+.summary-box{
+    margin-top:15px;
+    display:flex;
+    justify-content:flex-end;
+    gap:15px;
+}
+
+.summary-item{
+    width:220px;
+    height:45px;
+    line-height:45px;
+    text-align:center;
+    background:#176988;
+    color:white;
+    font-size:20px;
+    border-radius:6px;
+}
+
+/* 버튼 영역 */
+.btn-cancel,
+.btn-add,
+.btn-save{
+    width:100px;
+    height:45px;
+    border:none;
+    border-radius:8px;
+    color:white;
+    font-size:16px;
+    font-weight:bold;
+    cursor:pointer;
+    transition:.2s;
+}
+
+/* 행추가 */
+.btn-add{
+    background:#43a326;
+}
+
+.btn-add:hover{
+    background:#338019;
+    transform:translateY(-2px);
+}
+
+/* 저장 */
+.btn-save{
+    background:#ed6d2f;
+}
+/* 취소 */
+.btn-cancel{
+    background:#a9e21a;
+    font-size: 20px;
+}
+.btn-cancel:hover{
+    background:#b1f604;
+    transform:translateY(-2px);
+}
+
+.btn-save:hover{
+    background:#d85b1d;
+    transform:translateY(-2px);
+}
+
+/* 클릭효과 */
+.btn-add:active,
+.btn-save:active{
+    transform:translateY(1px);
+}
