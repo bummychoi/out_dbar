@@ -1,64 +1,63 @@
+// 회사 변경
 function changeCompany(){
 
-    const company = $("#company").val();
+    const company = document.getElementById("company").value;
 
-    $("#detailTable tbody tr").each(function(){
+    document.querySelectorAll("#detailTable tbody tr").forEach(function(row){
 
-        const colorInput = $(this).find("td:first-child input");
+        const colorInput = row.querySelector("td:first-child input");
 
         if(company === "dongkuk"){
-
-            colorInput.val("없음");
-            colorInput.prop("readonly", true);
-
-            colorInput.css({
-                "background":"#efefef",
-                "color":"#666",
-                "font-weight":"bold"
-            });
-
+            colorInput.value = "없음";
+            colorInput.readOnly = true;
+            colorInput.style.background = "#efefef";
+            colorInput.style.color = "#666";
+            colorInput.style.fontWeight = "bold";
         }else{
-
-            if(colorInput.val() === "없음"){
-                colorInput.val("");
+            if(colorInput.value === "없음"){
+                colorInput.value = "";
             }
 
-            colorInput.prop("readonly", false);
-
-            colorInput.css({
-                "background":"white",
-                "color":"black"
-            });
+            colorInput.readOnly = false;
+            colorInput.style.background = "white";
+            colorInput.style.color = "black";
+            colorInput.style.fontWeight = "normal";
         }
     });
 }
+
+// 행 추가
 function addRow(){
 
-    let row = `
-    <tr>
+    const tbody = document.querySelector("#detailTable tbody");
+
+    const row = document.createElement("tr");
+
+    row.innerHTML = `
         <td class="color-col">
             <input type="text">
         </td>
         <td><input type="text"></td>
         <td><input type="text"></td>
-        <td><input type="text"></td>
-        <td><input type="text"></td>
+        <td><input type="number"></td>
+        <td><input type="number" step="0.001"></td>
         <td>
             <button class="del_btn">
                 <span>삭제</span>
             </button>
         </td>
-    </tr>
     `;
 
-    $("#detailTable tbody").append(row);
+    tbody.appendChild(row);
 
     changeCompany();
+    calcTotal();
 }
+
 // 행 삭제
 function deleteRow(btn){
 
-    $(btn).closest("tr").remove();
+    btn.closest("tr").remove();
 
     calcTotal();
 }
@@ -69,17 +68,20 @@ function calcTotal(){
     let totalBundle = 0;
     let totalWeight = 0;
 
-    $("#detailTable tbody tr").each(function(){
+    document.querySelectorAll("#detailTable tbody tr").forEach(function(row){
 
-        const bundle = Number($(this).find("td:eq(3) input").val()) || 0;
-        const weight = Number($(this).find("td:eq(4) input").val()) || 0;
+        const bundleInput = row.querySelector("td:nth-child(4) input");
+        const weightInput = row.querySelector("td:nth-child(5) input");
+
+        const bundle = Number(bundleInput.value) || 0;
+        const weight = Number(weightInput.value) || 0;
 
         totalBundle += bundle;
         totalWeight += weight;
     });
 
-    $("#total_bundle").text(totalBundle);
-    $("#total_weight").text(totalWeight.toFixed(3));
+    document.getElementById("total_bundle").innerText = totalBundle;
+    document.getElementById("total_weight").innerText = totalWeight.toFixed(3);
 }
 
 // 저장
@@ -87,24 +89,46 @@ function savePlan(){
     alert("저장 기능 연결 예정");
 }
 
+// 취소
+function closePopup(){
+    window.close();
+}
+
 // 최초 실행
-$(document).ready(function(){
+document.addEventListener("DOMContentLoaded", function(){
 
     changeCompany();
     calcTotal();
 
-    // 번들/톤수 입력 시 합계 자동 계산
-    $(document).on("input", "#detailTable input", function(){
-        calcTotal();
+    document.addEventListener("input", function(e){
+        if(e.target.closest("#detailTable")){
+            calcTotal();
+        }
     });
 
-    // 기존 삭제 버튼도 작동
-    $(document).on("click", ".del_btn", function(){
-        deleteRow(this);
+    document.addEventListener("click", function(e){
+        const delBtn = e.target.closest(".del_btn");
+
+        if(delBtn){
+            deleteRow(delBtn);
+        }
     });
 
 });
 
-function closePopup(){
-    window.close();
-}
+
+document.addEventListener("DOMContentLoaded", function(){
+
+    // 현재월 설정
+    const today = new Date();
+
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, "0");
+
+    document.getElementById("ship_month").value =
+        `${year}-${month}`;
+
+    changeCompany();
+    calcTotal();
+
+});
