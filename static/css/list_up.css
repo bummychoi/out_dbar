@@ -288,6 +288,7 @@ table button,
 }
 
 /* 버튼 영역 */
+.btn-alldel,
 .ship-add,
 .btn-cancel,
 .btn-add,
@@ -305,6 +306,9 @@ table button,
 /* 선적등록 */
 .ship-add{
     background:#095de3;
+}
+.btn-alldel{
+    background: red;
 }
 /*취 소*/
 .btn-cancel{
@@ -328,6 +332,9 @@ table button,
 .ship-add:hover{
     background:#20b4e5;
     font-size: 20px;
+}
+.btn-alldel:hover{
+    zoom: 1.2;
 }
 .btn-cancel:hover{
     background:#b1f604;

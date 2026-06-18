@@ -167,14 +167,15 @@ def shipment_save():
 # 리스트 입력창
 @out_dbar_bp.route("/list_up")
 def list_up():
-
     ship_id = request.args.get("ship_id")
 
     conn = get_conn()
     cur = conn.cursor()
 
-    ship = None
+    details = []
 
+    ship = None
+    
     if ship_id:
         cur.execute("""
             SELECT *
@@ -183,13 +184,22 @@ def list_up():
         """, (ship_id,))
         ship = cur.fetchone()
 
+        cur.execute("""
+            SELECT *
+            FROM plan_d
+            WHERE ship_id=%s
+            ORDER BY id
+        """, (ship_id,))
+        details = cur.fetchall()
+
     cur.close()
     conn.close()
 
     return render_template(
-        "out_dbar/list_up.html",
-        ship=ship
-    )
+            "out_dbar/list_up.html",
+            ship=ship,
+            details=details
+        )
 
 # 목록리스트 저장
 @out_dbar_bp.route("/save_plan", methods=["POST"])
@@ -273,6 +283,63 @@ def save_plan():
         "message": "상세내역 저장 완료"
     })
 
+# 본선전체 삭제
+@out_dbar_bp.route("/delete_ship_all", methods=["POST"])
+def delete_ship_all():
+
+    data = request.get_json()
+    ship_id = data.get("ship_id")
+
+    conn = get_conn()
+    cur = conn.cursor()
+
+    # 상세 삭제
+    cur.execute("""
+        DELETE FROM plan_d
+        WHERE ship_id=%s
+    """, (ship_id,))
+
+    # 본선 삭제
+    cur.execute("""
+        DELETE FROM ship_m
+        WHERE id=%s
+    """, (ship_id,))
+
+    conn.commit()
+
+    cur.close()
+    conn.close()
+
+    return jsonify({
+        "result":"ok",
+        "message":"본선 전체 삭제 완료"
+    })
+
+# 한건 삭제
+@out_dbar_bp.route("/delete_detail", methods=["POST"])
+def delete_detail():
+
+    data = request.get_json()
+
+    detail_id = data.get("id")
+
+    conn = get_conn()
+    cur = conn.cursor()
+
+    cur.execute("""
+        DELETE FROM plan_d
+        WHERE id=%s
+    """, (detail_id,))
+
+    conn.commit()
+
+    cur.close()
+    conn.close()
+
+    return jsonify({
+        "result":"ok",
+        "message":"삭제 완료"
+    })
 
 
 # 현대제철 입고관리

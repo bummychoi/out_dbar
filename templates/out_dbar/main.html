@@ -87,7 +87,7 @@
                                 <td>{{ row.total_bundle }}</td>
                                 <td>{{ "%.3f"|format(row.total_weight) }}</td>
                                 <td>{{ "%.3f"|format(row.total_weight / row.total_bundle) }}</td>
-                                <td>{{ row.created_at }}</td>
+                                <td title="{{row.created_at }}">{{ row.created_at }}</td>
                                 <td></td>
                             </tr>
                             {% endfor %}
@@ -146,7 +146,7 @@
                                 <td>{{ row.total_bundle }}</td>
                                 <td>{{ "%.3f"|format(row.total_weight) }}</td>
                                 <td>{{ "%.3f"|format(row.total_weight / row.total_bundle) }}</td>
-                                <td>{{ row.created_at }}</td>
+                                <td title="{{row.created_at }}">{{ row.created_at }}</td>
                                 <td></td>
                             </tr>
                             </tr>

@@ -37,13 +37,59 @@ function addRow() {
     changeCompany();
     calcTotal();
 }
+function alldel(){
+
+    const shipName = $("#shipmentName").val();
+
+    if(shipName === ""){
+        alert("선적명이 없습니다.");
+        return;
+    }
+
+    if(!confirm(shipName + " 본선 전체를 삭제하시겠습니까?")){
+        return;
+    }
+
+    $.ajax({
+        url: "/out_dbar/delete_ship_all",
+        type: "POST",
+        contentType: "application/json",
+        data: JSON.stringify({
+            ship_id: $("#ship_id").val()
+        }),
+        success: function(res){
+            alert(res.message);
+            location.href = "/out_dbar/";
+        },
+        error: function(){
+            alert("삭제 실패");
+        }
+    });
+}
 
 // 행 삭제
-function deleteRow(btn) {
+function deleteDetail(id){
 
-    btn.closest("tr").remove();
+    if(!confirm("이 항목을 삭제하시겠습니까?")){
+        return;
+    }
 
-    calcTotal();
+    $.ajax({
+        url: "/out_dbar/delete_detail",
+        type: "POST",
+        contentType: "application/json",
+        data: JSON.stringify({
+            id: id
+        }),
+        success: function(res){
+            alert(res.message);
+
+            location.reload();
+        },
+        error: function(){
+            alert("삭제 실패");
+        }
+    });
 }
 
 // 합계 계산

@@ -35,13 +35,15 @@
     </button>
 
     <button class="btn-save" onclick="savePlan()">
-        💾 저장
+        💾 저장<br>/수정
     </button>
 
     <button class="btn-cancel" onclick="closePopup()">
         X 취소
     </button>
-
+    <button class="btn-alldel" onclick="alldel()">
+        전체삭제
+    </button>
 </div>
 
 <table id="detailTable" class="detail-table">
@@ -60,26 +62,55 @@
 
     <tbody>
 
+        {% if details %}
+
+        {% for row in details %}
+        <tr>
+
+            <td class="color-col">
+                <select class="color-select" onchange="changeColor(this)">
+                    <option value="">선택</option>
+                    <option value="red" {% if row.color_name=='red' %}selected{% endif %}>🔴빨강</option>
+                    <option value="orange" {% if row.color_name=='orange' %}selected{% endif %}>🟠주황</option>
+                    <option value="yellow" {% if row.color_name=='yellow' %}selected{% endif %}>🟡노랑</option>
+                    <option value="green" {% if row.color_name=='green' %}selected{% endif %}>🟢녹색</option>
+                    <option value="blue" {% if row.color_name=='blue' %}selected{% endif %}>🔵파란</option>
+                    <option value="purple" {% if row.color_name=='purple' %}selected{% endif %}>🟣보라</option>
+                </select>
+            </td>
+            <input type="hidden" id="ship_id" value="{{ ship.id }}">
+            <td><input type="text" class="grid-input" value="{{ row.steel_type }}"></td>
+            <td><input type="text" class="grid-input" value="{{ row.size_name }}"></td>
+            <td><input type="number" class="grid-input" value="{{ row.length_m }}"></td>
+            <td><input type="number" class="grid-input" value="{{ row.bundle_qty }}"></td>
+            <td><input type="number" step="0.001" class="grid-input" value="{{ row.weight_mt }}"></td>
+
+            <td>
+                <button class="del_btn" onclick="deleteDetail('{{ row.id }}')"><span>삭제</span></button>
+            </td>
+
+        </tr>
+        {% endfor %}
+
+        {% else %}
+
         <tr>
             <td class="color-col">
                 <select class="color-select" onchange="changeColor(this)">
                     <option value="">선택</option>
-                    <option value="red" style="background:red;">🔴빨강</option>
-                    <option value="orange" style="background:orange;">🟠주황</option>
-                    <option value="yellow" style="background:yellow;">🟡노랑</option>
-                    <option value="green" style="background:green;">🟢녹색</option>
-                    <option value="blue" style="background:blue;">🔵파란</option>
-                    <option value="purple" style="background:purple;">🟣보라</option>
+                    <option value="red">🔴빨강</option>
+                    <option value="orange">🟠주황</option>
+                    <option value="yellow">🟡노랑</option>
+                    <option value="green">🟢녹색</option>
+                    <option value="blue">🔵파란</option>
+                    <option value="purple">🟣보라</option>
                 </select>
             </td>
-            <td><input type="text" class="grid-input"></td>
 
             <td><input type="text" class="grid-input"></td>
-
+            <td><input type="text" class="grid-input"></td>
             <td><input type="number" class="grid-input"></td>
-
             <td><input type="number" class="grid-input"></td>
-
             <td><input type="number" step="0.001" class="grid-input"></td>
 
             <td>
@@ -87,8 +118,9 @@
             </td>
         </tr>
 
-    </tbody>
+        {% endif %}
 
+    </tbody>
 </table>
 
 <div class="summary-box">
