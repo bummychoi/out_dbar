@@ -1,20 +1,34 @@
-<script src="{{ url_for('static', filename='/js/input_form.js') }}"></script>
-<!-- <link rel="stylesheet" href="{{url_for('static',filename='css/main_lay.css')}}"> -->
-<link rel="stylesheet" href="{{url_for('static',filename='css/list_up.css')}}">
-    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/list_up.css') }}">
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+
+<script src="{{ url_for('static', filename='js/input_form.js') }}"></script>
+
+<!-- <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script> -->
 
 <div class="vessel-header">
+
     <label>회사</label>
     <select id="company" onchange="changeCompany()">
-        <option value="hyundai">현대제철</option>
-        <option value="dongkuk">동국제강</option>
+        <option value="hyundai" {% if ship and ship.company=='hyundai' %}selected{% endif %}>
+            현대제철
+        </option>
+
+        <option value="dongkuk" {% if ship and ship.company=='dongkuk' %}selected{% endif %}>
+            동국제강
+        </option>
     </select>
 
     <label>선적월</label>
-    <input type="month" id="ship_month">
+    <input type="month" id="ship_month" value="{{ ship.ship_month if ship else '' }}">
 
     <label>선적명</label>
-    <input type="text" id="vessel_name">
+    <input type="text" id="shipmentName" value="{{ ship.vessel_name if ship else '' }}">
+
+    <button class="ship-add" onclick="shipment()">
+        💾등록
+    </button>
 
     <button class="btn-add" onclick="addRow()">
         + 행추가
@@ -23,9 +37,11 @@
     <button class="btn-save" onclick="savePlan()">
         💾 저장
     </button>
+
     <button class="btn-cancel" onclick="closePopup()">
         X 취소
     </button>
+
 </div>
 
 <table id="detailTable" class="detail-table">
@@ -34,6 +50,7 @@
         <tr>
             <th class="color-col">단면색</th>
             <th>강종</th>
+            <th>싸이즈</th>
             <th>길이</th>
             <th>번들</th>
             <th>톤수</th>
@@ -45,12 +62,26 @@
 
         <tr>
             <td class="color-col">
-                <input type="text">
+                <select class="color-select" onchange="changeColor(this)">
+                    <option value="">선택</option>
+                    <option value="red" style="background:red;">🔴빨강</option>
+                    <option value="orange" style="background:orange;">🟠주황</option>
+                    <option value="yellow" style="background:yellow;">🟡노랑</option>
+                    <option value="green" style="background:green;">🟢녹색</option>
+                    <option value="blue" style="background:blue;">🔵파란</option>
+                    <option value="purple" style="background:purple;">🟣보라</option>
+                </select>
             </td>
-            <td><input></td>
-            <td><input></td>
-            <td><input></td>
-            <td><input></td>
+            <td><input type="text" class="grid-input"></td>
+
+            <td><input type="text" class="grid-input"></td>
+
+            <td><input type="number" class="grid-input"></td>
+
+            <td><input type="number" class="grid-input"></td>
+
+            <td><input type="number" step="0.001" class="grid-input"></td>
+
             <td>
                 <button class="del_btn"><span>삭제</span></button>
             </td>

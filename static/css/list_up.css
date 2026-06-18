@@ -288,6 +288,7 @@ table button,
 }
 
 /* 버튼 영역 */
+.ship-add,
 .btn-cancel,
 .btn-add,
 .btn-save{
@@ -301,7 +302,14 @@ table button,
     cursor:pointer;
     transition:.2s;
 }
-
+/* 선적등록 */
+.ship-add{
+    background:#095de3;
+}
+/*취 소*/
+.btn-cancel{
+    background:#05c8f4;
+}
 /* 행추가 */
 .btn-add{
     background:#43a326;
@@ -317,8 +325,8 @@ table button,
     background:#ed6d2f;
 }
 /* 취소 */
-.btn-cancel{
-    background:#a9e21a;
+.ship-add:hover{
+    background:#20b4e5;
     font-size: 20px;
 }
 .btn-cancel:hover{
@@ -335,4 +343,35 @@ table button,
 .btn-add:active,
 .btn-save:active{
     transform:translateY(1px);
+}
+
+
+.color-col > select{
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    font-size: 25px;
+}
+
+table{
+    width:100%;
+    table-layout:fixed;
+}
+
+th{
+    height:70px;
+}
+
+td{
+    height:60px;
+}
+
+th,
+td{
+    text-align:center;
+}
+
+th:last-child,
+td:last-child{
+    width:120px;
 }

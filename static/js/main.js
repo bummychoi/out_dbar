@@ -11,16 +11,6 @@ $(function () {
 
     let currentDate = new Date();
 
-    $("#datePicker").datepicker({
-        changeYear: true,
-        changeMonth: true,
-        yearRange: "2020:2035",
-        onSelect: function (dateText) {
-            currentDate = new Date(dateText);
-            updateAll();
-        }
-    });
-
     function formatDate(date) {
         const y = date.getFullYear();
         const m = date.getMonth() + 1;
@@ -35,6 +25,10 @@ $(function () {
         return `${y}-${m}-${d}`;
     }
 
+    function updateDateBox(){
+        $(".date-box").text(formatInputDate(currentDate));
+    }
+
     function getShift() {
         return $("input[name='shift']:checked").val();
     }
@@ -44,11 +38,21 @@ $(function () {
         const inputDate = formatInputDate(currentDate);
         const shift = getShift();
 
+        $(".date-box").text(inputDate);
         $("#dateText").text(`${dateText} ${shift}`);
         $("#datePicker").val(inputDate);
-
         $(".in-date").text(inputDate);
     }
+
+    $("#datePicker").datepicker({
+        changeYear: true,
+        changeMonth: true,
+        yearRange: "2020:2035",
+        onSelect: function (dateText) {
+            currentDate = new Date(dateText);
+            updateAll();
+        }
+    });
 
     $("#prevDay").on("click", function () {
         currentDate.setDate(currentDate.getDate() - 1);
@@ -77,7 +81,6 @@ $(function () {
     });
 
     updateAll();
-
 });
 
 function openModal(row) {
@@ -101,4 +104,8 @@ function list_up(){
 
 function closeListModal(){
     $("#listModal").hide();
+}
+
+function openPlan(shipId){
+    location.href = "/out_dbar/list_up?ship_id=" + shipId;
 }
