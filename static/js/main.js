@@ -2,9 +2,9 @@ $(function () {
 
     $.datepicker.setDefaults({
         dateFormat: "yy-mm-dd",
-        monthNames: ["1월","2월","3월","4월","5월","6월","7월","8월","9월","10월","11월","12월"],
-        monthNamesShort: ["1월","2월","3월","4월","5월","6월","7월","8월","9월","10월","11월","12월"],
-        dayNamesMin: ["일","월","화","수","목","금","토"],
+        monthNames: ["1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월"],
+        monthNamesShort: ["1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월"],
+        dayNamesMin: ["일", "월", "화", "수", "목", "금", "토"],
         showMonthAfterYear: true,
         yearSuffix: "년"
     });
@@ -25,7 +25,7 @@ $(function () {
         return `${y}-${m}-${d}`;
     }
 
-    function updateDateBox(){
+    function updateDateBox() {
         $(".date-box").text(formatInputDate(currentDate));
     }
 
@@ -81,13 +81,71 @@ $(function () {
     });
 
     updateAll();
+
+
+
+    // 체크박스
+    $(document).on("change", ".check", function () {
+
+        $(".check").not(this).prop("checked", false);
+
+        $("tr").removeClass("checked-row");
+
+        if ($(this).is(":checked")) {
+            $(this).closest("tr").addClass("checked-row");
+        }
+
+    });
+
+    // 선택된 ID 가져오기
+    function getSelectedId() {
+
+        const checked = $(".check:checked");
+
+        if (checked.length === 0) {
+            alert("항목을 선택하세요.");
+            return null;
+        }
+
+        return checked.val();
+    }
+
+    // 입고
+    $("#btnIn").click(function () {
+
+        const id = getSelectedId();
+        if (!id) return;
+
+        alert("입고 : " + id);
+
+    });
+
+    // 선적
+    $("#btnShip").click(function () {
+
+        const id = getSelectedId();
+        if (!id) return;
+
+        alert("선적 : " + id);
+
+    });
+
+    // 반품
+    $("#btnReturn").click(function () {
+
+        const id = getSelectedId();
+        if (!id) return;
+
+        alert("반품 : " + id);
+
+    });
 });
 
 function openModal(row) {
     alert("수정/삭제 모달 연결 예정");
 }
 
-function list_up(){
+function list_up() {
 
     let w = screen.availWidth * 0.7;
     let h = screen.availHeight * 0.7;
@@ -102,10 +160,11 @@ function list_up(){
     );
 }
 
-function closeListModal(){
+function closeListModal() {
     $("#listModal").hide();
 }
 
-function openPlan(shipId){
+function openPlan(shipId) {
     location.href = "/out_dbar/list_up?ship_id=" + shipId;
 }
+

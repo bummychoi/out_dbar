@@ -178,8 +178,14 @@ td {
     overflow: hidden;
     text-overflow: ellipsis;
 }
+tbody tr:hover td{
+    background: #0399c3 !important;
+    cursor: pointer;
+}
 
-
+.selected-row td{
+    background: #0399c3 !important;
+}
 
 /* 순번 */
 th:nth-child(1),
@@ -243,4 +249,13 @@ td:nth-child(3){
     top:50%;
     left:50%;
     transform:translate(-50%, -50%);
+}
+
+.check{
+    zoom: 1.8;
+}
+
+.checked-row td{
+    background:#0b9fc0 !important;
+    color:black;
 }

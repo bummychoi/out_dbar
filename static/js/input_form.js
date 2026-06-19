@@ -162,10 +162,7 @@ function savePlan() {
 });
 }
 
-// 취소
-function closePopup() {
-    location.href = "/out_dbar/";
-}
+C
 // 최초 실행
 document.addEventListener("DOMContentLoaded", function () {
 
@@ -246,3 +243,9 @@ function changeColor(obj) {
         $(obj).css("color", "black");
     }
 }
+// 취소
+function closePopup(){
+    window.close();
+}
+
+

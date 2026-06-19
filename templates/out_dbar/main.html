@@ -20,9 +20,9 @@
 
             <nav class="nav">
                 <button onclick="list_up()">목록생성</button>
-                <button>입고</button>
-                <button>선적</button>
-                <button>반품</button>
+                <button id="btnIn">입고</button>
+                <button id="btnShip">선적</button>
+                <button id="btnReturn">반품</button>
             </nav>
 
             <a href="#" class="home-btn">HOME</a>
@@ -42,12 +42,12 @@
                             예정 {{ hyundai_cnt }}모선
                         </div>
                         <div class="stock-label" style="color: red;">
-                            총합계:{{ "{:,}".format(hyundai_total_bundle) }}B/D
-                            {{ "{:,.3f}".format(hyundai_total_weight) }} M/T
+                            총합계:{{ "{:,}".format(hyundai_total_bundle+dongkuk_total_bundle) }} B/D
+                            {{ "{:,.3f}".format(hyundai_total_weight+dongkuk_total_weight) }} M/T
                         </div>
 
                         <div class="stock-label">
-                            현대합계: {{ hyundai_total_bundle }}B/D {{ "%.3f"|format(hyundai_total_weight) }} M/T
+                            현대합계: {{ "{:,}".format(hyundai_total_bundle) }} B/D {{ "{:,.3f}".format(hyundai_total_weight) }} M/T
                         </div>
 
                     </div>
@@ -59,6 +59,7 @@
 
                         <thead>
                             <tr>
+                                <th>체크</th>
                                 <th>순번</th>
                                 <th>선적월</th>
                                 <th>선적명</th>
@@ -77,6 +78,7 @@
                         <tbody>
                             {% for row in hyundai_list %}
                             <tr ondblclick="openPlan('{{row.id}}')">
+                                <th><input type="checkbox" class="check" value="{{row.id}}"></th>
                                 <td>{{ loop.index }}</td>
                                 <td>{{ row.ship_month }}</td>
                                 <td>{{ row.vessel_name }}</td>
@@ -111,7 +113,7 @@
                         </div>
 
                         <div class="stock-label">
-                            동국합계:{{ dongkuk_total_bundle }}B/D {{ "%.3f"|format(dongkuk_total_weight) }} M/T
+                            동국합계:{{ "{:,}".format(dongkuk_total_bundle) }}  B/D {{ "{:,.3f}".format(dongkuk_total_weight) }} M/T
                         </div>
 
                     </div>
@@ -137,6 +139,7 @@
                         <tbody>
                             {% for row in dongkuk_list %}
                             <tr ondblclick="openPlan('{{row.id}}')">
+                                <th><input type="checkbox" class="check" value="{{row.id}}"></th>
                                 <td>{{ loop.index }}</td>
                                 <td>{{ row.ship_month }}</td>
                                 <td>{{ row.vessel_name }}</td>
@@ -164,11 +167,11 @@
     </div>
 
 
-    <div id="listModal" class="modal">
+    <!-- <div id="listModal" class="modal">
         <div class="modal-box">
             <h2>목록생성</h2>
 
             <button onclick="closeListModal()">닫기</button>
         </div>
-    </div>
+    </div> -->
 </body>
