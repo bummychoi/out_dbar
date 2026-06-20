@@ -172,11 +172,12 @@ th {
 td {
     height: 40px;
     text-align: center;
-    font-size: 25px;
+    font-size: 15px;
     border: 1px solid white;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+     font-family: "Pretendard", "Noto Sans KR", "Malgun Gothic", sans-serif;
 }
 tbody tr:hover td{
     background: #0399c3 !important;
