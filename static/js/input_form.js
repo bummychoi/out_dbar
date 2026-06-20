@@ -37,16 +37,16 @@ function addRow() {
     changeCompany();
     calcTotal();
 }
-function alldel(){
+function alldel() {
 
     const shipName = $("#shipmentName").val();
 
-    if(shipName === ""){
+    if (shipName === "") {
         alert("선적명이 없습니다.");
         return;
     }
 
-    if(!confirm(shipName + " 본선 전체를 삭제하시겠습니까?")){
+    if (!confirm(shipName + " 본선 전체를 삭제하시겠습니까?")) {
         return;
     }
 
@@ -57,20 +57,20 @@ function alldel(){
         data: JSON.stringify({
             ship_id: $("#ship_id").val()
         }),
-        success: function(res){
+        success: function (res) {
             alert(res.message);
             location.href = "/out_dbar/";
         },
-        error: function(){
+        error: function () {
             alert("삭제 실패");
         }
     });
 }
 
 // 행 삭제
-function deleteDetail(id){
+function deleteDetail(id) {
 
-    if(!confirm("이 항목을 삭제하시겠습니까?")){
+    if (!confirm("이 항목을 삭제하시겠습니까?")) {
         return;
     }
 
@@ -81,16 +81,17 @@ function deleteDetail(id){
         data: JSON.stringify({
             id: id
         }),
-        success: function(res){
+        success: function (res) {
             alert(res.message);
 
             location.reload();
         },
-        error: function(){
+        error: function () {
             alert("삭제 실패");
         }
     });
 }
+
 
 // 합계 계산
 function calcTotal() {
@@ -98,21 +99,39 @@ function calcTotal() {
     let totalBundle = 0;
     let totalWeight = 0;
 
-    document.querySelectorAll("#detailTable tbody tr").forEach(function (row) {
+    $("#detailTable tbody tr").each(function () {
 
-        const bundleInput = row.querySelector("td:nth-child(4) input");
-        const weightInput = row.querySelector("td:nth-child(5) input");
+        const bundleCell = $(this).find("td:eq(4)");
+        const weightCell = $(this).find("td:eq(5)");
 
-        const bundle = Number(bundleInput.value) || 0;
-        const weight = Number(weightInput.value) || 0;
+        const bundleValue =
+            bundleCell.find("input").length > 0
+                ? bundleCell.find("input").val()
+                : bundleCell.text().trim();
+
+        const weightValue =
+            weightCell.find("input").length > 0
+                ? weightCell.find("input").val()
+                : weightCell.text().trim();
+
+        const bundle = Number(bundleValue) || 0;
+        const weight = Number(weightValue) || 0;
 
         totalBundle += bundle;
         totalWeight += weight;
     });
 
-    document.getElementById("total_bundle").innerText = totalBundle;
-    document.getElementById("total_weight").innerText = totalWeight.toFixed(3);
+    $("#total_bundle").text(totalBundle);
+    $("#total_weight").text(totalWeight.toFixed(3));
 }
+
+$(document).ready(function () {
+    calcTotal();
+
+    $(document).on("input change", "#detailTable input, #detailTable select", function () {
+        calcTotal();
+    });
+});
 
 // 저장
 function savePlan() {
@@ -148,18 +167,18 @@ function savePlan() {
     console.log(data);
 
     $.ajax({
-    url: "/out_dbar/save_plan",
-    type: "POST",
-    contentType: "application/json",
-    data: JSON.stringify(data),
-    success: function(res){
-        console.log(res);
-        alert(res.message);
-    },
-    error: function(){
-        alert("저장 실패");
-    }
-});
+        url: "/out_dbar/save_plan",
+        type: "POST",
+        contentType: "application/json",
+        data: JSON.stringify(data),
+        success: function (res) {
+            console.log(res);
+            alert(res.message);
+        },
+        error: function () {
+            alert("저장 실패");
+        }
+    });
 }
 
 C
@@ -243,9 +262,15 @@ function changeColor(obj) {
         $(obj).css("color", "black");
     }
 }
-// 취소
-function closePopup(){
-    window.close();
+function closePopup() {
+
+    // window.open()으로 열린 팝업이면
+    if (window.opener && !window.opener.closed) {
+        window.opener.location.reload();
+        window.close();
+        return;
+    }
+
+    // 직접 열린 새 탭이면 닫을 수 없으니 메인으로 이동
+    location.href = "/out_dbar/";
 }
-
-
