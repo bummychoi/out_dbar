@@ -39,13 +39,9 @@ def main():
             d.size_name,
             d.steel_type,
             d.length_m
-        ORDER BY
-            m.ship_month,
-            m.vessel_name,
-            d.color_name,
-            d.size_name,
-            d.steel_type,
-            d.length_m
+       ORDER BY
+        MAX(d.created_at) 
+        
     """)
     hyundai_list = cur.fetchall()
 
@@ -75,12 +71,7 @@ def main():
             d.steel_type,
             d.length_m
         ORDER BY
-            m.ship_month,
-            m.vessel_name,
-            d.color_name,
-            d.size_name,
-            d.steel_type,
-            d.length_m
+        MAX(d.created_at) 
     """)
     dongkuk_list = cur.fetchall()
 

@@ -274,3 +274,4 @@ function closePopup() {
     // 직접 열린 새 탭이면 닫을 수 없으니 메인으로 이동
     location.href = "/out_dbar/";
 }
+

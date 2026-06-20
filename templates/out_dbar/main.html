@@ -47,7 +47,8 @@
                         </div>
 
                         <div class="stock-label">
-                            현대합계: {{ "{:,}".format(hyundai_total_bundle) }} B/D {{ "{:,.3f}".format(hyundai_total_weight) }} M/T
+                            현대합계: {{ "{:,}".format(hyundai_total_bundle) }} B/D {{
+                            "{:,.3f}".format(hyundai_total_weight) }} M/T
                         </div>
 
                     </div>
@@ -82,7 +83,19 @@
                                 <td>{{ loop.index }}</td>
                                 <td>{{ row.ship_month }}</td>
                                 <td>{{ row.vessel_name }}</td>
-                                <td>{{ row.color_name }}</td>
+                                <td>
+                                    {% if row.color_name == 'green' %}
+                                    🟢 녹색
+                                    {% elif row.color_name == 'blue' %}
+                                    🔵 파란
+                                    {% elif row.color_name == 'yellow' %}
+                                    🟡 노랑
+                                    {% elif row.color_name == 'red' %}
+                                    🔴 빨강
+                                    {% else %}
+                                    {{ row.color_name }}
+                                    {% endif %}
+                                </td>
                                 <td>{{ row.steel_type }}</td>
                                 <td>{{ row.size_name }}</td>
                                 <td>{{ row.length_m }}</td>
@@ -113,7 +126,8 @@
                         </div>
 
                         <div class="stock-label">
-                            동국합계:{{ "{:,}".format(dongkuk_total_bundle) }}  B/D {{ "{:,.3f}".format(dongkuk_total_weight) }} M/T
+                            동국합계:{{ "{:,}".format(dongkuk_total_bundle) }} B/D {{ "{:,.3f}".format(dongkuk_total_weight)
+                            }} M/T
                         </div>
 
                     </div>
