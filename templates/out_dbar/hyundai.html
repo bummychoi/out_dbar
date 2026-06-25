@@ -4,13 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="{{url_for('static',filename='css/main.css')}}">
-    <link rel="stylesheet" href="{{url_for('static',filename='css/in.css')}}">
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
-    
+    <link rel="stylesheet" href="{{url_for('static',filename='css/in.css')}}">
 
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
-    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     <script src="{{ url_for('static', filename='js/in.js') }}"></script>
     <title>현대제철 입고</title>
 </head>
@@ -26,81 +24,126 @@
             </a>
             <button class="title-btn">현대제철 입고</button>
 
-            <div class="shift-box">
-                <label><input type="radio" name="shift" value="주간" checked> 주간</label>
-                <label><input type="radio" name="shift" value="야간"> 야간</label>
+            <div class="shift-date-box">
+
+                <button type="button" class="in-date-btn" id="prevDay">◀</button>
+
+                <span id="dateText" class="in-date-text">
+                    2026년 6월 23일
+                </span>
+
+                <button type="button" class="in-date-btn" id="nextDay">▶</button>
+
+                <label class="shift-label">
+                    <input type="radio" name="shift" value="주간" checked>
+                    <span class="shift-day" style="color: blue;">주간</span>
+                </label>
+
+                <label class="shift-label">
+                    <input type="radio" name="shift" value="야간">
+                    <span class="shift-night" style="color: red;">야간</span>
+                </label>
+
             </div>
 
-            <div class="date-box">
-                <button class="arrow" id="prevDay">◀</button>
-                <input type="text" id="datePicker">
-                <span id="dateText"></span>
-                <button class="arrow" id="nextDay">▶</button>
-            </div>
-            <button class="save-btn">저장</button>
+            <!-- <button class="save-btn">저장</button> -->
             <button class="copy-btn">복사</button>
             <button class="btn-cancel" onclick="closePopup()">X 취소</button>
         </div>
+        <div class="info-box">
+            <div class="info-item ship">
+                <span class="label">선적명</span>
+                <span class="value">EX26060127</span>
+            </div>
 
+            <div class="info-item color">
+                <span class="label">단면색</span>
+                <span class="value">🟢 녹색</span>
+            </div>
+
+            <div class="info-item steel">
+                <span class="label">강종</span>
+                <span class="value">A615-40</span>
+            </div>
+
+            <div class="info-item size">
+                <span class="label">사이즈(mm)</span>
+                <span class="value">#3(10)</span>
+            </div>
+
+            <div class="info-item length">
+                <span class="label">길이(M)</span>
+                <span class="value">6</span>
+            </div>
+        </div>
+        <div class="summary-box">
+
+            <input type="hidden" id="plan_id" value="{{ ship.plan_id }}">
+            <input type="hidden" id="plan_bundle" value="{{ ship.plan_qty }}">
+            <input type="hidden" id="plan_weight" value="{{ ship.plan_mt }}">
+
+            <div class="card plan">
+                <div class="title">예정</div>
+                <div class="bd"><span id="plan_bundle_text">{{  "{:,.0f}".format(ship.plan_qty) }}</span> B/D</div>
+                <div class="mt"><span id="plan_weight_text">{{ "{:,.3f}".format(ship.plan_mt) }}</span> M/T</div>
+            </div>
+
+            <div class="card in">
+                <div class="title">입고</div>
+                <div class="bd"><span id="in_bundle">0</span> B/D</div>
+                <div class="mt"><span id="in_weight">0.000</span> M/T</div>
+            </div>
+
+            <div class="card remain">
+                <div class="title">잔량</div>
+                <div class="bd"><span id="remain_bundle">{{ ship.plan_qty }}</span> B/D</div>
+                <div class="mt"><span id="remain_weight">{{ "{:,.3f}".format(ship.plan_mt) }}</span> M/T</div>
+            </div>
+
+        </div>
+        <input type="hidden" id="plan_id" value="{{ ship.plan_id }}">
         <div class="table-wrap">
-            <table>
+            <table id="inTable">
                 <thead>
                     <tr>
                         <th>순번</th>
                         <th>입고일자</th>
                         <th>주야</th>
                         <th>차량번호</th>
-                        <th>선적명</th>
-                        <th>단면색</th>
-                        <th>강종</th>
-                        <th>사이즈</th>
                         <th>번들</th>
                         <th>톤수</th>
-                        <th>단중</th>
                         <th>저장구역</th>
+                        <th>단중</th>
                         <th>저장일시</th>
                         <th>비고</th>
+                        <th>버튼</th>
                     </tr>
                 </thead>
 
-                <tbody>
-                    <tr ondblclick="openModal(this)">
-                        <td>1</td>
-                        <td class="in-date">2026-06-16</td>
-                        <td>주간</td>
-                        <td>123가4567</td>
-                        <td>HY-001</td>
-                        <td>파랑색</td>
-                        <td>SD400</td>
-                        <td>D25</td>
-                        <td>50</td>
-                        <td>102.350</td>
-                        <td>2.047</td>
-                        <td>A-01</td>
-                        <td class="ellipsis" title="2026-06-16 08:30">2026-06-16 08:30</td>
-                        <td></td>
-                    </tr>
+                <tbody id="inBody">
+                    <tr>
+                        <td class="input-title">입력</td>
+                        <td class="in-date"></td>
+                        <td class="in-shift"></td>
 
-                    <tr ondblclick="openModal(this)">
-                        <td>2</td>
-                        <td class="in-date">2026-06-16</td>
-                        <td>주간</td>
-                        <td>123가4567</td>
-                        <td>HY-001</td>
-                        <td>노란색</td>
-                        <td>SD400</td>
-                        <td>D25</td>
-                        <td>50</td>
-                        <td>102.350</td>
-                        <td>2.047</td>
-                        <td>A-01</td>
-                        <td class="ellipsis" title="2026-06-16 08:30">2026-06-16 08:30</td>
-                        <td></td>
+                        <td><input type="text" class="car-no" placeholder="차량번호"></td>
+                        <td><input type="number" class="bundle-qty" placeholder="번들"></td>
+                        <td><input type="number" step="0.001" class="weight-mt" placeholder="톤수"></td>
+                        <td><input type="text" class="location-no" placeholder="저장구역"></td>
+
+                        <td class="unit-weight">0.000</td>
+                        <td class="created-at"></td>
+                        <td><textarea class="remark" placeholder="비고사항"></textarea></td>
+                        <td>
+                            <span id="save" class="btn-save" onclick="saveIn()">저장</span>
+                        </td>
                     </tr>
+                </tbody>
+                <tbody id="savedBody">
                 </tbody>
             </table>
         </div>
-        <div class="guide">※ 행 더블클릭 : 수정 / 삭제</div>
+        <div class="guide">※ 행 더블클릭 : 수정</div>
     </div>
 </body>
 
