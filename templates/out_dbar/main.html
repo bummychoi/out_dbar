@@ -78,8 +78,11 @@
 
                         <tbody>
                             {% for row in hyundai_list %}
-                            <tr ondblclick="openPlan('{{row.id}}')">
-                                <th><input type="checkbox" class="check" value="{{row.id}}"></th>
+                            <tr ondblclick="openPlan('{{ row.ship_id }}')">
+                                <th>
+                                    <input type="checkbox" class="check" value="{{ row.plan_id }}"
+                                        data-company="{{ row.company }}">
+                                </th>
                                 <td>{{ loop.index }}</td>
                                 <td>{{ row.ship_month }}</td>
                                 <td>{{ row.vessel_name }}</td>
@@ -99,9 +102,13 @@
                                 <td>{{ row.steel_type }}</td>
                                 <td>{{ row.size_name }}</td>
                                 <td>{{ row.length_m }}</td>
-                                <td>{{ row.total_bundle }}</td>
-                                <td>{{ "%.3f"|format(row.total_weight) }}</td>
-                                <td>{{ "%.3f"|format(row.total_weight / row.total_bundle) }}</td>
+                                <td>{{ "{:,}".format(row.total_bundle) }}</td>
+                                <td>{{ "{:,.3f}".format(row.total_weight|float) }}</td>
+                                {% if row.total_bundle|float > 0 %}
+                                <td>{{ "{:,.3f}".format((row.total_weight|float) / (row.total_bundle|float)) }}</td>
+                                {% else %}
+                                <td>0.000</td>
+                                {% endif %}
                                 <td title="{{row.created_at }}">{{ row.created_at }}</td>
                                 <td></td>
                             </tr>
@@ -153,16 +160,19 @@
 
                         <tbody>
                             {% for row in dongkuk_list %}
-                            <tr ondblclick="openPlan('{{row.id}}')">
-                                <th><input type="checkbox" class="check" value="{{row.id}}"></th>
+                            <tr ondblclick="openPlan('{{ row.ship_id }}')">
+                                <th>
+                                    <input type="checkbox" class="check" value="{{ row.plan_id }}"
+                                        data-company="{{ row.company }}">
+                                </th>
                                 <td>{{ loop.index }}</td>
                                 <td>{{ row.ship_month }}</td>
                                 <td>{{ row.vessel_name }}</td>
                                 <td>{{ row.size_name }}</td>
                                 <td>{{ row.steel_type }}</td>
                                 <td>{{ row.length_m }}</td>
-                                <td>{{ row.total_bundle }}</td>
-                                <td>{{ "%.3f"|format(row.total_weight) }}</td>
+                                <td>{{ "{:,}".format(row.total_bundle) }}</td>
+                                <td>{{ "{:,.3f}".format(row.total_weight) }}</td>
                                 <td>{{ "%.3f"|format(row.total_weight / row.total_bundle) }}</td>
                                 <td title="{{row.created_at }}">{{ row.created_at }}</td>
                                 <td></td>

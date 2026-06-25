@@ -4,11 +4,13 @@
 <head>
     <meta charset="UTF-8"> 
     <link rel="stylesheet" href="{{url_for('static',filename='css/main.css')}}">
+    <link rel="stylesheet" href="{{url_for('static',filename='css/in.css')}}">
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
 
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/in.js') }}"></script>
     <title>동국제강 입고</title>
 </head>
 
@@ -21,7 +23,7 @@
                 <span id="home-btn">🏠</span>
                 <span>HOME</span>
             </a>
-            <button class="title-btn">동국제강 입고</button>
+            <button class="title-btn" style="background: orange; color: rgb(66, 31, 221);" >동국제강 입고</button>
 
             <div class="shift-box">
                 <label><input type="radio" name="shift" value="주간" checked> 주간</label>
@@ -36,8 +38,7 @@
             </div>
             <button class="save-btn">저장</button>
             <button class="copy-btn">복사</button>
-            <!-- <input>
-            <button class="search-btn">조회</button> -->
+            <button class="btn-cancel" onclick="closePopup()">X 취소</button>
         </div>
 
         <table>

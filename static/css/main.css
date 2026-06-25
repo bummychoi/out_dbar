@@ -7,13 +7,21 @@ body {
     padding: 25px 10px;
     background: #e9e9e9;
     font-family: '맑은 고딕', sans-serif;
+    overflow-x: auto;
 }
 
+.page {
+    width: 100%;
+    min-width: 1700px;
+}
+
+/* 상단 */
 .top {
     display: flex;
     align-items: center;
     gap: 28px;
     margin-bottom: 25px;
+    flex-wrap: nowrap;
 }
 
 .home-btn {
@@ -30,7 +38,6 @@ body {
 
     text-decoration: none;
     color: #0d5d82;
-
     font-weight: bold;
     transition: .2s;
 }
@@ -98,13 +105,18 @@ body {
     background: #0d5d82;
     color: white;
     border: 2px solid #06394f;
+
     display: flex;
     align-items: center;
     justify-content: center;
+
     font-size: 28px;
     font-weight: bold;
     cursor: pointer;
 }
+
+/* 버튼 */
+.btn-cancel,
 .search-btn,
 .save-btn,
 .copy-btn {
@@ -118,6 +130,10 @@ body {
     cursor: pointer;
 }
 
+.btn-cancel {
+    background: red;
+}
+
 .save-btn {
     background: #0d5d82;
 }
@@ -125,9 +141,12 @@ body {
 .copy-btn {
     background: #18a9e0;
 }
-.search-btn{
+
+.search-btn {
     background: #0d18eb;
 }
+
+.btn-cancel:hover,
 .search-btn:hover,
 .copy-btn:hover,
 .save-btn:hover {
@@ -236,9 +255,16 @@ body {
     cursor: pointer !important;
 }
 
+/* 테이블 감싸기 */
+.table-wrap {
+    width: 100%;
+    overflow-x: auto;
+}
+
 /* 테이블 */
 table {
     width: 100%;
+    min-width: 1700px;
     table-layout: fixed;
     border-collapse: collapse;
 }
@@ -270,10 +296,8 @@ tbody tr:nth-child(odd) td {
 
 /* 짝수행 */
 tbody tr:nth-child(even) td {
-    
     background: #bde9ae;
 }
-
 
 /* 마우스 오버 */
 tbody tr:hover td {
@@ -281,11 +305,7 @@ tbody tr:hover td {
     cursor: pointer;
 }
 
-tbody tr:hover td {
-    background: #cfe0ca;
-    cursor: pointer;
-}
-
+/* 컬럼 폭 */
 th:nth-child(1),
 td:nth-child(1) {
     width: 55px;
@@ -338,12 +358,22 @@ td:nth-child(10) {
 
 th:nth-child(11),
 td:nth-child(11) {
-    width: 190px;
+    width: 120px;
 }
 
 th:nth-child(12),
 td:nth-child(12) {
-    width: 250px;
+    width: 130px;
+}
+
+th:nth-child(13),
+td:nth-child(13) {
+    width: 180px;
+}
+
+th:nth-child(14),
+td:nth-child(14) {
+    width: 110px;
 }
 
 .guide {

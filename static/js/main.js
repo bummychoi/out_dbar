@@ -113,10 +113,27 @@ $(function () {
     // 입고
     $("#btnIn").click(function () {
 
-        const id = getSelectedId();
-        if (!id) return;
+        const checked = $(".check:checked");
 
-        alert("입고 : " + id);
+        if (checked.length === 0) {
+            alert("항목을 선택하세요.");
+            return;
+        }
+
+        const id = checked.val();
+        const company = checked.data("company");
+
+        const width = Math.min(1500, screen.availWidth - 20);
+        const height = Math.min(900, screen.availHeight - 60);
+
+        const left = Math.round((screen.availWidth - width) / 2);
+        const top = Math.round((screen.availHeight - height) / 2);
+
+        window.open(
+            "/out_dbar/" + company + "/in?ship_id=" + id,
+            "inPopup",
+            `width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=yes`
+        );
 
     });
 

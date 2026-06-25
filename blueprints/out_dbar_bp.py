@@ -17,7 +17,9 @@ def main():
     # 현대제철
     cur.execute("""
         SELECT
-            m.id,
+            d.id AS plan_id,
+            m.id AS ship_id,
+            m.company,
             m.ship_month,
             m.vessel_name,
             d.color_name,
@@ -32,23 +34,26 @@ def main():
             ON m.id = d.ship_id
         WHERE m.company='hyundai'
         GROUP BY
+            d.id,
             m.id,
+            m.company,
             m.ship_month,
             m.vessel_name,
             d.color_name,
             d.size_name,
             d.steel_type,
             d.length_m
-       ORDER BY
-        MAX(d.created_at) 
-        
+        ORDER BY
+            MAX(d.created_at) DESC
     """)
     hyundai_list = cur.fetchall()
 
     # 동국제강
     cur.execute("""
         SELECT
-            m.id,
+            d.id AS plan_id,
+            m.id AS ship_id,
+            m.company,
             m.ship_month,
             m.vessel_name,
             d.color_name,
@@ -63,7 +68,9 @@ def main():
             ON m.id = d.ship_id
         WHERE m.company='dongkuk'
         GROUP BY
+            d.id,
             m.id,
+            m.company,
             m.ship_month,
             m.vessel_name,
             d.color_name,
@@ -71,7 +78,7 @@ def main():
             d.steel_type,
             d.length_m
         ORDER BY
-        MAX(d.created_at) 
+            MAX(d.created_at) DESC
     """)
     dongkuk_list = cur.fetchall()
 
@@ -89,14 +96,13 @@ def main():
         "out_dbar/main.html",
         hyundai_list=hyundai_list,
         dongkuk_list=dongkuk_list,
-        hyundai_cnt=len(set(row["id"] for row in hyundai_list)),
-        dongkuk_cnt=len(set(row["id"] for row in dongkuk_list)),
+        hyundai_cnt=len(set(row["ship_id"] for row in hyundai_list)),
+        dongkuk_cnt=len(set(row["ship_id"] for row in dongkuk_list)),
         hyundai_total_bundle=hyundai_total_bundle,
         hyundai_total_weight=hyundai_total_weight,
         dongkuk_total_bundle=dongkuk_total_bundle,
         dongkuk_total_weight=dongkuk_total_weight
     )
-
 
 
 @out_dbar_bp.route("/shipment_save", methods=["POST"])
@@ -333,13 +339,13 @@ def delete_detail():
     })
 
 
-# 현대제철 입고관리
-@out_dbar_bp.route("/hyundai")
-def hyundai():
-    return render_template("out_dbar/hyundai.html")
+# # 현대제철 입고관리
+# @out_dbar_bp.route("/hyundai")
+# def hyundai():
+#     return render_template("out_dbar/hyundai.html")
 
 
-# 동국제강 입고관리
-@out_dbar_bp.route("/dongkuk")
-def dongkuk():
-    return render_template("out_dbar/dongkuk.html")
+# # 동국제강 입고관리
+# @out_dbar_bp.route("/dongkuk")
+# def dongkuk():
+#     return render_template("out_dbar/dongkuk.html")

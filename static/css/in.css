@@ -1,0 +1,34 @@
+body {
+    margin: 0;
+    padding: 25px 10px;
+    background: #e9e9e9;
+    font-family: '맑은 고딕', sans-serif;
+    overflow-x: auto;
+}
+
+.page {
+    width: 100%;
+    min-width: 1350px;
+    box-sizing: border-box;
+    padding: 20px 8px;
+}
+
+.top {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: nowrap;
+    margin-bottom: 25px;
+}
+
+.table-wrap {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.table-wrap table {
+    width: 100%;
+    min-width: 1350px;
+    table-layout: fixed;
+    border-collapse: collapse;
+}
