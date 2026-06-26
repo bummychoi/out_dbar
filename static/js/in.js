@@ -206,7 +206,9 @@ function loadInList() {
                     <td>${unit.toFixed(3)}</td>
                     <td>${row.created_time}</td>
                     <td>${row.remark || ""}</td>
-                    <td>수정</td>
+                    <td>
+                        <button type="button" onclick="openEdit(${row.id})">수정</button>
+                    </td>
                 </tr>
             `;
         });
@@ -250,15 +252,74 @@ function calcSummary(rows) {
     );
 }
 
-function openModal(row) {
-    alert("수정/삭제 모달 연결 예정");
+function openEdit(id) {
+
+    $.get("/out_dbar/hyundai/in/detail/" + id, function (row) {
+
+        $("#edit_id").val(row.id);
+        $("#edit_car_no").val(row.car_no);
+        $("#edit_bundle").val(row.bundle_qty);
+        $("#edit_weight").val(row.weight_mt);
+        $("#edit_location").val(row.location_no);
+        $("#edit_remark").val(row.remark);
+
+        $("#editModal").fadeIn(200);
+
+    });
+}
+function closeModal() {
+    $("#editModal").fadeOut();
 }
 
-function closePopup() {
+function updateIn(){
 
-    if (window.opener && !window.opener.closed) {
-        window.opener.location.reload();
-    }
+    const data = {
+        id: $("#edit_id").val(),
+        car_no: $("#edit_car_no").val(),
+        bundle_qty: $("#edit_bundle").val(),
+        weight_mt: $("#edit_weight").val(),
+        location_no: $("#edit_location").val(),
+        remark: $("#edit_remark").val()
+    };
 
-    window.close();
+    $.ajax({
+        url: "/out_dbar/hyundai/in/update",
+        type: "POST",
+        contentType: "application/json",
+        data: JSON.stringify(data),
+        success: function(res){
+            if(res.result === "ok"){
+                alert("수정 완료");
+                closeModal();
+                loadInList();
+            }
+        }
+    });
+}
+
+
+function deleteIn(){
+
+    const id = $("#edit_id").val();
+
+    if(!confirm("삭제하시겠습니까?")) return;
+
+    $.ajax({
+        url: "/out_dbar/hyundai/in/delete/" + id,
+        type: "POST",
+        success: function(res){
+            if(res.result === "ok"){
+                alert("삭제 완료");
+                closeModal();
+                loadInList();
+            }
+        }
+    });
+}
+
+
+
+function closeModal() {
+
+    $("#editModal").fadeOut();
 }

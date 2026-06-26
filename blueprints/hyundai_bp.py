@@ -141,3 +141,80 @@ def in_list(plan_id):
     conn.close()
 
     return jsonify(result)
+
+
+@hyundai_bp.route("/in/detail/<int:id>")
+def in_detail(id):
+
+    conn = get_conn()
+    cur = conn.cursor()
+
+    cur.execute("""
+        SELECT
+            id,
+            car_no,
+            bundle_qty,
+            weight_mt,
+            location_no,
+            remark
+        FROM in_d
+        WHERE id=%s
+    """, (id,))
+
+    row = cur.fetchone()
+
+    cur.close()
+    conn.close()
+
+    return jsonify(row)
+
+
+@hyundai_bp.route("/in/update", methods=["POST"])
+def update_in():
+
+    data = request.get_json()
+
+    conn = get_conn()
+    cur = conn.cursor()
+
+    cur.execute("""
+        UPDATE in_d
+        SET
+            car_no=%s,
+            bundle_qty=%s,
+            weight_mt=%s,
+            location_no=%s,
+            remark=%s
+        WHERE id=%s
+    """, (
+        data.get("car_no"),
+        data.get("bundle_qty"),
+        data.get("weight_mt"),
+        data.get("location_no"),
+        data.get("remark"),
+        data.get("id")
+    ))
+
+    conn.commit()
+    cur.close()
+    conn.close()
+
+    return jsonify({"result":"ok"})
+
+
+@hyundai_bp.route("/in/delete/<int:id>", methods=["POST"])
+def delete_in(id):
+
+    conn = get_conn()
+    cur = conn.cursor()
+
+    cur.execute("""
+        DELETE FROM in_d
+        WHERE id=%s
+    """, (id,))
+
+    conn.commit()
+    cur.close()
+    conn.close()
+
+    return jsonify({"result":"ok"})

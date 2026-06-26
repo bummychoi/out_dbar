@@ -10,6 +10,7 @@
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
     <script src="{{ url_for('static', filename='js/in.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/in.js') }}?v=2"></script>
     <title>현대제철 입고</title>
 </head>
 
@@ -47,8 +48,8 @@
             </div>
 
             <!-- <button class="save-btn">저장</button> -->
-            <button class="copy-btn">복사</button>
-            <button class="btn-cancel" onclick="closePopup()">X 취소</button>
+            <!-- <button class="copy-btn">복사</button>
+            <button class="btn-cancel" onclick="closePopup()">X 취소</button> -->
         </div>
         <div class="info-box">
             <div class="info-item ship">
@@ -84,7 +85,7 @@
 
             <div class="card plan">
                 <div class="title">예정</div>
-                <div class="bd"><span id="plan_bundle_text">{{  "{:,.0f}".format(ship.plan_qty) }}</span> B/D</div>
+                <div class="bd"><span id="plan_bundle_text">{{ "{:,.0f}".format(ship.plan_qty) }}</span> B/D</div>
                 <div class="mt"><span id="plan_weight_text">{{ "{:,.3f}".format(ship.plan_mt) }}</span> M/T</div>
             </div>
 
@@ -144,6 +145,48 @@
             </table>
         </div>
         <div class="guide">※ 행 더블클릭 : 수정</div>
+    </div>
+    <div id="editModal" class="modal">
+        <div class="edit-box">
+            <h2>입고 수정</h2>
+
+            <input type="hidden" id="edit_id">
+
+            <div class="edit-row">
+                <label>차량번호</label>
+                <input type="text" id="edit_car_no">
+            </div>
+
+            <div class="edit-row">
+                <label>번들</label>
+                <input type="number" id="edit_bundle">
+            </div>
+
+            <div class="edit-row">
+                <label>톤수</label>
+                <input type="number" step="0.001" id="edit_weight">
+            </div>
+
+            <div class="edit-row">
+                <label>저장위치</label>
+                <input type="text" id="edit_location">
+            </div>
+
+            <div class="edit-row">
+                <label>비고</label>
+                <input type="text" id="edit_remark">
+            </div>
+
+            <div class="edit-btns">
+                <button class="edit-save" onclick="updateIn()">수정</button>
+                <button onclick="deleteIn()">삭제</button>
+                <button onclick="closeModal()">취소</button>
+            </div>
+        </div>
+    </div>
+
+    </div>
+
     </div>
 </body>
 
