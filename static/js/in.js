@@ -229,17 +229,25 @@ function calcSummary(rows) {
     const planBundle = Number($("#plan_bundle").val()) || 0;
     const planWeight = Number($("#plan_weight").val()) || 0;
 
-    $("#in_bundle").text(inBundle.toLocaleString());
-   $("#in_weight").text(inWeight.toLocaleString(
-        undefined,
-        { minimumFractionDigits: 3, maximumFractionDigits: 3 }
-    ));
+    // 잔량 계산
+    const remainBundle = planBundle - inBundle;
+    const remainWeight = planWeight - inWeight;
 
-    $("#remain_bundle").text((planBundle - inBundle).toLocaleString());
-     $("#remain_weight").text(remainWeight.toLocaleString(
-        undefined,
-        { minimumFractionDigits: 3, maximumFractionDigits: 3 }
-    ));
+    $("#in_bundle").text(inBundle.toLocaleString());
+    $("#in_weight").text(
+        inWeight.toLocaleString(undefined, {
+            minimumFractionDigits: 3,
+            maximumFractionDigits: 3
+        })
+    );
+
+    $("#remain_bundle").text(remainBundle.toLocaleString());
+    $("#remain_weight").text(
+        remainWeight.toLocaleString(undefined, {
+            minimumFractionDigits: 3,
+            maximumFractionDigits: 3
+        })
+    );
 }
 
 function openModal(row) {
