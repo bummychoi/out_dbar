@@ -54,27 +54,35 @@
         <div class="info-box">
             <div class="info-item ship">
                 <span class="label">선적명</span>
-                <span class="value">EX26060127</span>
+                <span class="value">{{ ship.vessel_name }}</span>
             </div>
 
             <div class="info-item color">
                 <span class="label">단면색</span>
-                <span class="value">🟢 녹색</span>
+                <span class="value">
+                    {% if ship.color_name == 'green' %}🟢 녹색
+                    {% elif ship.color_name == 'red' %}🔴 적색
+                    {% elif ship.color_name == 'yellow' %}🟡 노랑
+                    {% elif ship.color_name == 'blue' %}🔵 청색
+                    {% else %}
+                    {{ ship.color_name }}
+                    {% endif %}
+                </span>
             </div>
 
             <div class="info-item steel">
                 <span class="label">강종</span>
-                <span class="value">A615-40</span>
+                <span class="value">{{ ship.steel_type }}</span>
             </div>
 
             <div class="info-item size">
                 <span class="label">사이즈(mm)</span>
-                <span class="value">#3(10)</span>
+                <span class="value">{{ ship.size_name }}</span>
             </div>
 
             <div class="info-item length">
                 <span class="label">길이(M)</span>
-                <span class="value">6</span>
+                <span class="value">{{ ship.length_m }}</span>
             </div>
         </div>
         <div class="summary-box">

@@ -96,7 +96,6 @@ def save_in():
 
         cur.close()
         conn.close()
-
 @hyundai_bp.route("/in/list/<int:plan_id>")
 def in_list(plan_id):
 
@@ -115,7 +114,7 @@ def in_list(plan_id):
             remark,
             created_at
         FROM in_d
-        WHERE plan_id=%s
+        WHERE plan_id = %s
         ORDER BY id DESC
     """, (plan_id,))
 
@@ -124,7 +123,6 @@ def in_list(plan_id):
     result = []
 
     for row in rows:
-
         result.append({
             "id": row["id"],
             "in_date": row["in_date"].strftime("%Y-%m-%d"),
@@ -141,7 +139,6 @@ def in_list(plan_id):
     conn.close()
 
     return jsonify(result)
-
 
 @hyundai_bp.route("/in/detail/<int:id>")
 def in_detail(id):
