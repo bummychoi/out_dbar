@@ -79,29 +79,37 @@ $(function () {
         alert("복사 기능 연결 예정");
     });
 
-    // Enter / Tab 이동
-    $(document).on(
-        "keydown",
-        ".car-no, .bundle-qty, .weight-mt, .location-no, .remark",
-        function (e) {
+    let isConfirming = false;
 
-            if (e.key !== "Enter" && e.key !== "Tab") return;
+// Enter / Tab 이동
+$(document).on(
+    "keydown",
+    ".car-no, .bundle-qty, .weight-mt, .location-no, .remark",
+    function (e) {
 
-            e.preventDefault();
+        if (e.key !== "Enter" && e.key !== "Tab") return;
 
-            const row = $(this).closest("tr");
+        e.preventDefault();
+        e.stopPropagation();
 
-            const inputs = row.find(
-                ".car-no, .bundle-qty, .weight-mt, .location-no, .remark"
-            );
+        if (isConfirming) return;
 
-            const idx = inputs.index(this);
+        const row = $(this).closest("tr");
 
-            if (idx < inputs.length - 1) {
-                inputs.eq(idx + 1).focus().select();
-                return;
-            }
+        const inputs = row.find(
+            ".car-no, .bundle-qty, .weight-mt, .location-no, .remark"
+        );
 
+        const idx = inputs.index(this);
+
+        if (idx < inputs.length - 1) {
+            inputs.eq(idx + 1).focus().select();
+            return;
+        }
+
+        isConfirming = true;
+
+        setTimeout(function () {
             const ok = confirm("입고 내용을 저장하시겠습니까?");
 
             if (ok) {
@@ -109,8 +117,11 @@ $(function () {
             } else {
                 clearInputRow();
             }
-        }
-    );
+
+            isConfirming = false;
+        }, 0);
+    }
+);
 
     // 단중 자동 계산
     $(document).on("input", ".bundle-qty, .weight-mt", function () {
@@ -141,6 +152,9 @@ function clearInputRow() {
 
     row.find(".car-no").focus();
 }
+
+
+let isSaving = false;
 
 function saveIn() {
 
