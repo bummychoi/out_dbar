@@ -43,6 +43,8 @@ $(function () {
         $(".in-shift").text(shift);
 
         $("#inBody .row-no").text("입력");
+
+        loadInList();
     }
 
     $("#datePicker").datepicker({
@@ -180,34 +182,38 @@ function saveIn() {
     });
 }
 
+
 function loadInList() {
 
     const planId = $("#plan_id").val();
+    const inDate = $("#datePicker").val();
+    const workType = $("input[name='shift']:checked").val();
 
-    $.get("/out_dbar/hyundai/in/list/" + planId, function (rows) {
-
+    $.get("/out_dbar/hyundai/in/list/" + planId, {
+        in_date: inDate,
+        work_type: workType
+    }, function (rows) {
         let html = "";
 
         rows.forEach(function (row, idx) {
-
             const unit = Number(row.bundle_qty) > 0
                 ? Number(row.weight_mt) / Number(row.bundle_qty)
                 : 0;
 
             html += `
-                <tr>
+                <tr class="saved-row" onclick="copyToInput(this)">
                     <td>${rows.length - idx}</td>
-                    <td>${row.in_date}</td>
-                    <td>${row.work_type}</td>
-                    <td>${row.car_no}</td>
-                    <td>${Number(row.bundle_qty).toLocaleString()}</td>
-                    <td>${Number(row.weight_mt).toFixed(3)}</td>
-                    <td>${row.location_no || ""}</td>
-                    <td>${unit.toFixed(3)}</td>
-                    <td>${row.created_time}</td>
-                    <td>${row.remark || ""}</td>
+                    <td class="in-date">${row.in_date}</td>
+                    <td class="in-shift">${row.work_type}</td>
+                    <td class="car-no">${row.car_no}</td>
+                    <td class="bundle-qty">${Number(row.bundle_qty).toLocaleString()}</td>
+                    <td class="weight-mt">${Number(row.weight_mt).toFixed(3)}</td>
+                    <td class="location-no">${row.location_no || ""}</td>
+                    <td class="unit-weight">${unit.toFixed(3)}</td>
+                    <td class="created-at">${row.created_time}</td>
+                    <td class="remark">${row.remark || ""}</td>
                     <td>
-                        <button type="button" onclick="openEdit(${row.id})">수정</button>
+                        <button type="button" onclick="event.stopPropagation(); openEdit(${row.id})">수정</button>
                     </td>
                 </tr>
             `;
@@ -275,6 +281,7 @@ function updateIn(){
 
     const data = {
         id: $("#edit_id").val(),
+        work_type: $("input[name='edit_work_type']:checked").val(),
         car_no: $("#edit_car_no").val(),
         bundle_qty: $("#edit_bundle").val(),
         weight_mt: $("#edit_weight").val(),
@@ -322,4 +329,26 @@ function deleteIn(){
 function closeModal() {
 
     $("#editModal").fadeOut();
+}
+
+
+function copyToInput(row){
+
+    $(".saved-row").removeClass("selected");
+    $(row).addClass("selected");
+
+    const inputRow = $("#inBody tr:first");
+
+    inputRow.find(".car-no").val($(row).find(".car-no").text().trim());
+    inputRow.find(".bundle-qty").val($(row).find(".bundle-qty").text().trim().replaceAll(",", ""));
+    inputRow.find(".weight-mt").val($(row).find(".weight-mt").text().trim());
+    inputRow.find(".location-no").val($(row).find(".location-no").text().trim());
+    inputRow.find(".remark").val($(row).find(".remark").text().trim());
+
+    const bundle = Number(inputRow.find(".bundle-qty").val()) || 0;
+    const weight = Number(inputRow.find(".weight-mt").val()) || 0;
+    const unit = bundle > 0 ? weight / bundle : 0;
+
+    inputRow.find(".unit-weight").text(unit.toFixed(3));
+    inputRow.find(".car-no").focus().select();
 }

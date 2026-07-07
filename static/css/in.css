@@ -488,3 +488,47 @@ th:nth-child(11), td:nth-child(11) { width: 100px; padding: 0; height:52px;}
     background:#146b86;
     color:white;
 }
+
+.shift-group{
+    margin-left: 20px;
+    display:flex;
+    gap:10px;
+    align-items:center;
+}
+
+.shift-group input[type=radio]{
+    display:none;
+}
+
+.shift-btn{
+    width:90px;
+    height:38px;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    border:2px solid #1d6d8b;
+    border-radius:8px;
+
+    background:#fff;
+    color:#1d6d8b;
+    font-weight:bold;
+    cursor:pointer;
+
+    transition:0.2s;
+}
+
+.shift-group input:checked + .shift-btn{
+    background:#1d6d8b;
+    color:#fff;
+}
+
+.shift-btn:hover{
+    background:#2a88ad;
+    color:#fff;
+}
+
+.saved-row.selected{
+    background:#ffe082 !important;
+}

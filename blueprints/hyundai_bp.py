@@ -96,6 +96,7 @@ def save_in():
 
         cur.close()
         conn.close()
+
 @hyundai_bp.route("/in/list/<int:plan_id>")
 def in_list(plan_id):
 
@@ -177,6 +178,7 @@ def update_in():
     cur.execute("""
         UPDATE in_d
         SET
+            work_type=%s,
             car_no=%s,
             bundle_qty=%s,
             weight_mt=%s,
@@ -184,6 +186,7 @@ def update_in():
             remark=%s
         WHERE id=%s
     """, (
+        data["work_type"],
         data.get("car_no"),
         data.get("bundle_qty"),
         data.get("weight_mt"),
