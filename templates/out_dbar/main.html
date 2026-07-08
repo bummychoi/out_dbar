@@ -85,6 +85,7 @@
                                     {% elif row.color_name == 'blue' %} 🔵 파란
                                     {% elif row.color_name == 'yellow' %} 🟡 노랑
                                     {% elif row.color_name == 'red' %} 🔴 빨강
+                                    {% elif row.color_name == 'orange' %} 🟠 주황
                                     {% else %} {{ row.color_name }}
                                     {% endif %}
                                 </td>
@@ -153,7 +154,7 @@
                                 <td>{{ loop.index }}</td>
                                 <td>{{ row.ship_month }}</td>
                                 <td>{{ row.vessel_name }}</td>
-                                <td>{{ row.vessel_no }}</td>
+                                <td>{{ row.color_name or "" }}</td>
                                 <td>{{ row.steel_type }}</td>
                                 <td>{{ row.size_name }}</td>
                                 <td>{{ row.length_m }}</td>

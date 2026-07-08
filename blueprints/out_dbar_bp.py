@@ -188,7 +188,8 @@ def list_up():
             ORDER BY id
         """, (ship_id,))
         details = cur.fetchall()
-
+    # for row in details:
+    #     print("id:", row["id"], "color_name:", row["color_name"])
     cur.close()
     conn.close()
 

@@ -4,19 +4,22 @@ function changeCompany() {
 
     document.querySelectorAll("#detailTable tbody tr").forEach(function (row) {
 
-        const colorSelect = row.querySelector("td:first-child select");
-
-        if (!colorSelect) return;
+        const firstTd = row.querySelector("td:first-child");
 
         if (company === "dongkuk") {
-            colorSelect.value = "";
-            colorSelect.disabled = true;
-            colorSelect.style.background = "#efefef";
-            colorSelect.style.color = "#666";
+            firstTd.innerHTML = `
+                <input type="text" class="color-name" placeholder="배선번호 입력">
+            `;
         } else {
-            colorSelect.disabled = false;
-            colorSelect.style.background = "white";
-            colorSelect.style.color = "black";
+            firstTd.innerHTML = `
+                <select class="color-name" onchange="changeColor(this)">
+                    <option value="">단면색 선택</option>
+                    <option value="yellow">노랑</option>
+                    <option value="green">녹색</option>
+                    <option value="red">빨강</option>
+                    <option value="blue">파랑</option>
+                </select>
+            `;
         }
     });
 }
@@ -141,12 +144,17 @@ function savePlan() {
         return;
     }
 
+    const company = $("#company").val();
     const details = [];
 
     $("#detailTable tbody tr").each(function () {
 
+        const firstValue = $(this).find("td:eq(0) input").length > 0
+            ? $(this).find("td:eq(0) input").val()
+            : $(this).find("td:eq(0) select").val();
+
         details.push({
-            color_name: $(this).find("td:eq(0) select").val(),
+            color_name: firstValue,
             steel_type: $(this).find("td:eq(1) input").val(),
             size_name: $(this).find("td:eq(2) input").val(),
             length_m: $(this).find("td:eq(3) input").val(),
@@ -156,15 +164,12 @@ function savePlan() {
 
     });
 
-
     const data = {
         shipmentName: $("#shipmentName").val(),
-        company: $("#company").val(),
+        company: company,
         shipMonth: $("#ship_month").val(),
         details: details
     };
-
-    console.log(data);
 
     $.ajax({
         url: "/out_dbar/save_plan",
@@ -172,7 +177,6 @@ function savePlan() {
         contentType: "application/json",
         data: JSON.stringify(data),
         success: function (res) {
-            console.log(res);
             alert(res.message);
         },
         error: function () {
@@ -180,12 +184,10 @@ function savePlan() {
         }
     });
 }
-
-C
 // 최초 실행
 document.addEventListener("DOMContentLoaded", function () {
 
-    changeCompany();
+    // changeCompany();
     calcTotal();
 
     document.addEventListener("input", function (e) {
@@ -216,7 +218,7 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("ship_month").value =
         `${year}-${month}`;
 
-    changeCompany();
+    // changeCompany();
     calcTotal();
 
 });
