@@ -227,7 +227,7 @@ function loadInList() {
                     <td class="created-at">${row.created_time}</td>
                     <td class="remark">${row.remark || ""}</td>
                     <td>
-                        <button type="button" onclick="event.stopPropagation(); openEdit(${row.id})">수정</button>
+                        <button class="btn-save" type="button " onclick="event.stopPropagation(); openEdit(${row.id})">수정</button>
                     </td>
                 </tr>
             `;
@@ -277,6 +277,10 @@ function openEdit(id) {
     $.get("/out_dbar/hyundai/in/detail/" + id, function (row) {
 
         $("#edit_id").val(row.id);
+
+        $("input[name='edit_work_type'][value='" + row.work_type + "']")
+            .prop("checked", true);
+
         $("#edit_car_no").val(row.car_no);
         $("#edit_bundle").val(row.bundle_qty);
         $("#edit_weight").val(row.weight_mt);
@@ -287,11 +291,12 @@ function openEdit(id) {
 
     });
 }
+
 function closeModal() {
     $("#editModal").fadeOut();
 }
-
-function updateIn(){
+// 현대수정
+function updateIn_hyundai(){
 
     const data = {
         id: $("#edit_id").val(),
@@ -317,7 +322,34 @@ function updateIn(){
         }
     });
 }
+// 동국 수정
 
+function updateIn_dongkuk(){
+
+    const data = {
+        id: $("#edit_id").val(),
+        work_type: $("input[name='edit_work_type']:checked").val(),
+        car_no: $("#edit_car_no").val(),
+        bundle_qty: $("#edit_bundle").val(),
+        weight_mt: $("#edit_weight").val(),
+        location_no: $("#edit_location").val(),
+        remark: $("#edit_remark").val()
+    };
+
+    $.ajax({
+        url: "/out_dbar/dongkuk/in/update",
+        type: "POST",
+        contentType: "application/json",
+        data: JSON.stringify(data),
+        success: function(res){
+            if(res.result === "ok"){
+                alert("수정 완료");
+                closeModal();
+                loadInList();
+            }
+        }
+    });
+}
 
 function deleteIn(){
 

@@ -489,6 +489,31 @@ th:nth-child(11), td:nth-child(11) { width: 100px; padding: 0; height:52px;}
     color:white;
 }
 
+.cancel-save{
+    width:120px;
+    height:48px;
+    background:#6c757d;
+    color:#fff;
+    border:none;
+    border-radius:6px;
+    font-size:20px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.delet-save{
+    background: orange;
+    border: white;
+}
+
+.delet-save:hover,
+.edit-save:hover{
+    background: rgb(109, 170, 240);    
+}
+
+
+
+
 .shift-group{
     margin-left: 20px;
     display:flex;
@@ -531,4 +556,11 @@ th:nth-child(11), td:nth-child(11) { width: 100px; padding: 0; height:52px;}
 
 .saved-row.selected{
     background:#ffe082 !important;
+}
+
+/* 동국제강 */
+.dongkuk-btn{
+    background: rgb(241, 187, 10);
+    color: blue;
+
 }

@@ -96,6 +96,22 @@ body {
     flex-direction: column;
     box-shadow: 0 2px 6px rgba(0,0,0,.12);
 }
+.hyundai-wrap,
+.dongkuk-wrap{
+    height: 330px;      /* 원하는 높이 */
+    overflow-y: auto;
+    overflow-x: auto;
+    border: 1px solid #ccc;
+}
+
+.hyundai-wrap thead th,
+.dongkuk-wrap thead th{
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+
 
 .hyundai-area {
     border-top: 7px solid #176988;
@@ -161,6 +177,9 @@ table {
 }
 
 th {
+    position: sticky;
+    top:0;
+    z-index: 10;
     height: 44px;
     background: #43A326;
     color: white;

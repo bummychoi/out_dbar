@@ -150,6 +150,7 @@ def in_detail(id):
     cur.execute("""
         SELECT
             id,
+            work_type,
             car_no,
             bundle_qty,
             weight_mt,

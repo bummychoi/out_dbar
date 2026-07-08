@@ -27,37 +27,31 @@
 
             <a href="#" class="home-btn">HOME</a>
         </header>
-
         <main class="content">
 
             <section class="company-area hyundai-area">
                 <div class="company-title hyundai-title">
                     <div class="company-info">
-
                         <div class="company-label hyundai-label">
-                            <a href="#" style="color: white;">현대제철</a>
+                            <a href="#" style="color:white;">현대제철</a>
                         </div>
 
-                        <div class="plan-label">
-                            예정 {{ hyundai_cnt }}모선
-                        </div>
-                        <div class="stock-label" style="color: rgb(0, 0, 0);">
+                        <div class="plan-label">예정 {{ hyundai_cnt }}모선</div>
+
+                        <div class="stock-label" style="color:black;">
                             총합계:{{ "{:,}".format(hyundai_total_bundle+dongkuk_total_bundle) }} B/D
                             {{ "{:,.3f}".format(hyundai_total_weight+dongkuk_total_weight) }} M/T
                         </div>
 
                         <div class="stock-label">
-                            현대합계: {{ "{:,}".format(hyundai_total_bundle) }} B/D {{
-                            "{:,.3f}".format(hyundai_total_weight) }} M/T
+                            현대합계: {{ "{:,}".format(hyundai_total_bundle) }} B/D
+                            {{ "{:,.3f}".format(hyundai_total_weight) }} M/T
                         </div>
-
                     </div>
                 </div>
 
-                <div class="table-scroll">
-
+                <div class="table-wrap table-scroll hyundai-wrap">
                     <table>
-
                         <thead>
                             <tr>
                                 <th>체크</th>
@@ -72,31 +66,26 @@
                                 <th>톤수</th>
                                 <th>단중</th>
                                 <th>저장일시</th>
-                                <th>비고사항</th>                            
+                                <th>비고사항</th>
                             </tr>
                         </thead>
 
                         <tbody>
                             {% for row in hyundai_list %}
                             <tr ondblclick="openPlan('{{ row.ship_id }}')">
-                                <th>
+                                <td>
                                     <input type="checkbox" class="check" value="{{ row.plan_id }}"
                                         data-company="{{ row.company }}">
-                                </th>
+                                </td>
                                 <td>{{ loop.index }}</td>
                                 <td>{{ row.ship_month }}</td>
                                 <td>{{ row.vessel_name }}</td>
                                 <td>
-                                    {% if row.color_name == 'green' %}
-                                    🟢 녹색
-                                    {% elif row.color_name == 'blue' %}
-                                    🔵 파란
-                                    {% elif row.color_name == 'yellow' %}
-                                    🟡 노랑
-                                    {% elif row.color_name == 'red' %}
-                                    🔴 빨강
-                                    {% else %}
-                                    {{ row.color_name }}
+                                    {% if row.color_name == 'green' %} 🟢 녹색
+                                    {% elif row.color_name == 'blue' %} 🔵 파란
+                                    {% elif row.color_name == 'yellow' %} 🟡 노랑
+                                    {% elif row.color_name == 'red' %} 🔴 빨강
+                                    {% else %} {{ row.color_name }}
                                     {% endif %}
                                 </td>
                                 <td>{{ row.steel_type }}</td>
@@ -109,82 +98,83 @@
                                 {% else %}
                                 <td>0.000</td>
                                 {% endif %}
-                                <td title="{{row.created_at }}">{{ row.created_at }}</td>
+                                <td title="{{ row.created_at }}">{{ row.created_at }}</td>
                                 <td></td>
                             </tr>
                             {% endfor %}
                         </tbody>
-
                     </table>
-
                 </div>
             </section>
 
             <section class="company-area dongkuk-area">
                 <div class="company-title dongkuk-title">
                     <div class="company-info">
-
                         <div class="company-label dongkuk-label">
-                            <a href="#" style="color: white;">동국제강</a>
+                            <a href="#" style="color:white;">동국제강</a>
                         </div>
 
-                        <div class="plan-label dongkuk-plan">
-                            예정 {{ dongkuk_cnt }}모선
-                        </div>
+                        <div class="plan-label dongkuk-plan">예정 {{ dongkuk_cnt }}모선</div>
 
                         <div class="stock-label">
-                            동국합계:{{ "{:,}".format(dongkuk_total_bundle) }} B/D {{ "{:,.3f}".format(dongkuk_total_weight)
-                            }} M/T
+                            동국합계:{{ "{:,}".format(dongkuk_total_bundle) }} B/D
+                            {{ "{:,.3f}".format(dongkuk_total_weight) }} M/T
                         </div>
-
                     </div>
                 </div>
 
-                <div class="table-scroll">
+                <div class="table-wrap dongkuk-table-wrap table-scroll">
                     <table>
-                        <tr>
-                            <th>체크</th>
-                            <th>순번</th>
-                            <th>선적월</th>
-                            <th>선적명</th>
-                            <th>사이즈</th>
-                            <th>강종</th>
-                            <th>길이</th>
-                            <th>번들</th>
-                            <th>톤수</th>
-                            <th>단중</th>
-                            <th>저장일시</th>
-                            <th>비고</th>
-                        </tr>
+                        <thead>
+                            <tr>
+                                <th>체크</th>
+                                <th>순번</th>
+                                <th>선적월</th>
+                                <th>선적명</th>
+                                <th>배선번호</th>
+                                <th>강종</th>
+                                <th>사이즈</th>
+                                <th>길이</th>
+                                <th>번들</th>
+                                <th>톤수</th>
+                                <th>단중</th>
+                                <th>저장일시</th>
+                                <th>비고</th>
+                            </tr>
                         </thead>
 
                         <tbody>
                             {% for row in dongkuk_list %}
                             <tr ondblclick="openPlan('{{ row.ship_id }}')">
-                                <th>
+                                <td>
                                     <input type="checkbox" class="check" value="{{ row.plan_id }}"
                                         data-company="{{ row.company }}">
-                                </th>
+                                </td>
                                 <td>{{ loop.index }}</td>
                                 <td>{{ row.ship_month }}</td>
                                 <td>{{ row.vessel_name }}</td>
-                                <td>{{ row.size_name }}</td>
+                                <td>{{ row.vessel_no }}</td>
                                 <td>{{ row.steel_type }}</td>
+                                <td>{{ row.size_name }}</td>
                                 <td>{{ row.length_m }}</td>
                                 <td>{{ "{:,}".format(row.total_bundle) }}</td>
                                 <td>{{ "{:,.3f}".format(row.total_weight) }}</td>
+                                {% if row.total_bundle|float > 0 %}
                                 <td>{{ "%.3f"|format(row.total_weight / row.total_bundle) }}</td>
-                                <td title="{{row.created_at }}">{{ row.created_at }}</td>
+                                {% else %}
+                                <td>0.000</td>
+                                {% endif %}
+                                <td title="{{ row.created_at }}">{{ row.created_at }}</td>
                                 <td></td>
                             </tr>
-                            </tr>
                             {% endfor %}
-                        </tbody>
                         </tbody>
                     </table>
                 </div>
             </section>
+
         </main>
+
 
         <footer class="footer">
             OUT_DBAR 입고 현황 시스템 &copy;bumychoi

@@ -10,7 +10,6 @@
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
     <script src="{{ url_for('static', filename='js/in.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/in.js') }}?v=2"></script>
     <title>현대제철 입고</title>
 </head>
 
@@ -200,9 +199,9 @@
             </div>
 
             <div class="edit-btns">
-                <button class="edit-save" onclick="updateIn()">수정</button>
-                <button onclick="deleteIn()">삭제</button>
-                <button onclick="closeModal()">취소</button>
+                <button type="button" class="edit-save" onclick="updateIn_hyundai()">수정</button>
+                <button class="delet-save" onclick="deleteIn()">삭제</button>
+                <button clscc="cencel-save" onclick="closeModal()">취소</button>
             </div>
         </div>
     </div>
