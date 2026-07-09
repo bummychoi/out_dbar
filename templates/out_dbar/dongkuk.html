@@ -55,7 +55,18 @@
                 <span class="label">선적명</span>
                 <span class="value" style="font-size: 18px;">{{ ship.vessel_name }}</span>
             </div>
-
+            <div class="info-item color">
+                <span class="label">배선명</span>
+                <span class="value">
+                    {% if ship.color_name == 'green' %}🟢 녹색
+                    {% elif ship.color_name == 'red' %}🔴 적색
+                    {% elif ship.color_name == 'yellow' %}🟡 노랑
+                    {% elif ship.color_name == 'blue' %}🔵 청색
+                    {% else %}
+                    {{ ship.color_name }}
+                    {% endif %}
+                </span>
+            </div>
             <div class="info-item steel">
                 <span class="label">강종</span>
                 <span class="value">{{ ship.steel_type }}</span>
