@@ -109,49 +109,72 @@
             </div>
 
         </div>
-        <input type="hidden" id="plan_id" value="{{ ship.plan_id }}">
-        <div class="table-wrap">
-            <table id="inTable">
-                <thead>
-                    <tr>
-                        <th>순번</th>
-                        <th>입고일자</th>
-                        <th>주야</th>
-                        <th>차량번호</th>
-                        <th>번들</th>
-                        <th>톤수</th>
-                        <th>저장구역</th>
-                        <th>단중</th>
-                        <th>저장일시</th>
-                        <th>비고</th>
-                        <th>버튼</th>
-                    </tr>
-                </thead>
+        <section class="list_box">
+            <aside class="summary_box">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>입고일자</th>
+                            <th>대수</th>
+                            <th>입고수량</th>
+                            <th>입고톤수</th>
+                            <th>잔량수량</th>
+                            <th>잔량톤수</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dayBody">
 
-                <tbody id="inBody">
-                    <tr>
-                        <td class="input-title">입력</td>
-                        <td class="in-date"></td>
-                        <td class="in-shift"></td>
+                        <!-- 날짜별 집계가 들어갈 곳 -->
 
-                        <td><input type="text" class="car-no" placeholder="차량번호"></td>
-                        <td><input type="number" class="bundle-qty" placeholder="번들"></td>
-                        <td><input type="number" step="0.001" class="weight-mt" placeholder="톤수"></td>
-                        <td><input type="text" class="location-no" placeholder="저장구역"></td>
+                    </tbody>
+                </table>
+            </aside>
+            <section class="in_box">
+                <input type="hidden" id="plan_id" value="{{ ship.plan_id }}">
+                <div class="table-wrap">
+                    <table id="inTable">
+                        <thead>
+                            <tr>
+                                <th>순번</th>
+                                <th>입고일자</th>
+                                <th>주야</th>
+                                <th>차량번호</th>
+                                <th>번들</th>
+                                <th>톤수</th>
+                                <th>저장구역</th>
+                                <th>단중</th>
+                                <th>저장일시</th>
+                                <th>비고</th>
+                                <th>버튼</th>
+                            </tr>
+                        </thead>
 
-                        <td class="unit-weight">0.000</td>
-                        <td class="created-at"></td>
-                        <td><textarea class="remark" placeholder="비고사항"></textarea></td>
-                        <td>
-                            <span id="save" class="btn-save" onclick="saveIn()">저장</span>
-                        </td>
-                    </tr>
-                </tbody>
-                <tbody id="savedBody">
-                </tbody>
-            </table>
-        </div>
-        <div class="guide">※ 행 더블클릭 : 수정</div>
+                        <tbody id="inBody">
+                            <tr>
+                                <td class="input-title">입력</td>
+                                <td class="in-date"></td>
+                                <td class="in-shift"></td>
+
+                                <td><input type="text" class="car-no" placeholder="차량번호"></td>
+                                <td><input type="number" class="bundle-qty" placeholder="번들"></td>
+                                <td><input type="number" step="0.001" class="weight-mt" placeholder="톤수"></td>
+                                <td><input type="text" class="location-no" placeholder="저장구역"></td>
+
+                                <td class="unit-weight">0.000</td>
+                                <td class="created-at"></td>
+                                <td><textarea class="remark" placeholder="비고사항"></textarea></td>
+                                <td>
+                                    <span id="save" class="btn-save" onclick="saveIn()">저장</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tbody id="savedBody">
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </section>
+        <!-- <div class="guide">※ 행 더블클릭 : 수정</div> -->
     </div>
     <div id="editModal" class="modal">
         <div class="edit-box">
@@ -208,6 +231,9 @@
 
     </div>
 
+    </div>
+    <div class="footer">
+        &copy; 2026 bumychoi. All Rights Reserved.
     </div>
 </body>
 
