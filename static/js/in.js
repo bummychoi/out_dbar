@@ -1025,12 +1025,16 @@ function escapeHtml(value) {
 }
 
 function goToday() {
-
+    console.log("goToday 실행");
+     // 오늘 날짜
     currentDate = new Date();
 
-    // 오늘 날짜의 주야는 현재 선택값 유지
+    // 오늘 날짜를 datepicker에도 적용
+    $("#datePicker").datepicker("setDate", currentDate);
+
+    // 오늘 날짜 화면 갱신
     updateAll();
 
-    // 왼쪽 날짜별 집계 선택 해제
+    // 왼쪽 선택 해제
     $("#dayBody .summary_row").removeClass("selected");
 }
