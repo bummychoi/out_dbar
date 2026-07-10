@@ -80,3 +80,35 @@ def update_in():
     conn.close()
 
     return jsonify({"result": "ok"})
+
+
+# 날짜별 집계
+@dongkuk_bp.route("/summary/day/<int:plan_id>")
+def summary_day(plan_id):
+
+    conn = get_conn()
+    cur = conn.cursor()
+
+    cur.execute("""
+        SELECT
+            in_date,
+            work_type,
+            COUNT(*) truck_cnt,
+            SUM(bundle_qty) bundle_qty,
+            SUM(weight_mt) weight_mt
+        FROM in_d
+        WHERE plan_id=%s
+        GROUP BY
+            in_date,
+            work_type
+        ORDER BY
+            in_date,
+            FIELD(work_type,'주간','야간')
+    """, (plan_id,))
+
+    rows = cur.fetchall()
+
+    cur.close()
+    conn.close()
+
+    return jsonify(rows)

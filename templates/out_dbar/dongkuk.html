@@ -3,210 +3,541 @@
 
 <head>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="{{url_for('static',filename='css/main.css')}}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
-    <link rel="stylesheet" href="{{url_for('static',filename='css/in.css')}}">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/in.css') }}">
 
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
-    <script src="{{ url_for('static', filename='js/in.js') }}?v=4"></script>
-    <title>현대제철 입고</title>
+
+    <script src="{{ url_for('static', filename='js/in.js') }}?v=6"></script>
+
+    <title>동국제강 입고</title>
 </head>
 
 <body>
 
     <div class="page">
 
-        <div class="top">
-            <a href="#" class="home-btn">
+        <!-- 공통 데이터 -->
+        <input type="hidden" id="plan_id" value="{{ ship.plan_id }}">
+
+        <input type="hidden" id="plan_bundle" value="{{ ship.plan_qty }}">
+
+        <input type="hidden" id="plan_weight" value="{{ ship.plan_mt }}">
+
+        <input type="hidden" id="company_type" value="dongkuk">
+
+
+        <!-- 상단 제목 및 날짜 -->
+        <header class="top">
+
+            <a href="{{ url_for('out_dbar.main') }}" class="home-btn">
+
                 <span id="home-btn">🏠</span>
                 <span>HOME</span>
+
             </a>
-            <button class="title-btn dongkuk-btn">동국제강 입고</button>
+
+            <button type="button" class="title-btn dongkuk-btn">
+                동국제강 입고
+            </button>
 
             <div class="shift-date-box">
 
-                <button type="button" class="in-date-btn" id="prevDay">◀</button>
+                <button type="button" class="in-date-btn" id="prevDay">
+                    ◀
+                </button>
 
                 <span id="dateText" class="in-date-text">
-                    2026년 6월 23일
                 </span>
 
-                <button type="button" class="in-date-btn" id="nextDay">▶</button>
+                <button type="button" class="in-date-btn" id="nextDay">
+                    ▶
+                </button>
 
                 <label class="shift-label">
+
                     <input type="radio" name="shift" value="주간" checked>
-                    <span class="shift-day" style="color: blue;">주간</span>
+
+                    <span class="shift-day" style="color: blue;">
+                        주간
+                    </span>
+
                 </label>
 
                 <label class="shift-label">
+
                     <input type="radio" name="shift" value="야간">
-                    <span class="shift-night" style="color: red;">야간</span>
+
+                    <span class="shift-night" style="color: red;">
+                        야간
+                    </span>
+
                 </label>
 
             </div>
 
-            <!-- <button class="save-btn">저장</button> -->
-            <!-- <button class="copy-btn">복사</button>
-            <button class="btn-cancel" onclick="closePopup()">X 취소</button> -->
-        </div>
-        <div class="info-box">
+        </header>
+
+
+        <!-- 품목 기본정보 -->
+        <section class="info-box">
+
             <div class="info-item ship">
-                <span class="label">선적명</span>
-                <span class="value" style="font-size: 18px;">{{ ship.vessel_name }}</span>
-            </div>
-            <div class="info-item color">
-                <span class="label">배선명</span>
-                <span class="value">
-                    {% if ship.color_name == 'green' %}🟢 녹색
-                    {% elif ship.color_name == 'red' %}🔴 적색
-                    {% elif ship.color_name == 'yellow' %}🟡 노랑
-                    {% elif ship.color_name == 'blue' %}🔵 청색
-                    {% else %}
-                    {{ ship.color_name }}
-                    {% endif %}
+
+                <span class="label">
+                    선적명
                 </span>
+
+                <span class="value" style="font-size: 18px;">
+                    {{ ship.vessel_name }}
+                </span>
+
             </div>
+
+
+            <div class="info-item color">
+
+                <span class="label">
+                    배선명
+                </span>
+
+                <span class="value">
+
+                    {% if ship.color_name == 'green' %}
+
+                    🟢 녹색
+
+                    {% elif ship.color_name == 'red' %}
+
+                    🔴 적색
+
+                    {% elif ship.color_name == 'yellow' %}
+
+                    🟡 노랑
+
+                    {% elif ship.color_name == 'blue' %}
+
+                    🔵 청색
+
+                    {% else %}
+
+                    {{ ship.color_name or '-' }}
+
+                    {% endif %}
+
+                </span>
+
+            </div>
+
+
             <div class="info-item steel">
-                <span class="label">강종</span>
-                <span class="value">{{ ship.steel_type }}</span>
+
+                <span class="label">
+                    강종
+                </span>
+
+                <span class="value">
+                    {{ ship.steel_type }}
+                </span>
+
             </div>
+
 
             <div class="info-item size">
-                <span class="label">사이즈(mm)</span>
-                <span class="value">{{ ship.size_name }}</span>
+
+                <span class="label">
+                    사이즈(mm)
+                </span>
+
+                <span class="value">
+                    {{ ship.size_name }}
+                </span>
+
             </div>
+
 
             <div class="info-item length">
-                <span class="label">길이(M)</span>
-                <span class="value">{{ ship.length_m }}</span>
-            </div>
-        </div>
-        <div class="summary-box">
 
-            <input type="hidden" id="plan_id" value="{{ ship.plan_id }}">
-            <input type="hidden" id="plan_bundle" value="{{ ship.plan_qty }}">
-            <input type="hidden" id="plan_weight" value="{{ ship.plan_mt }}">
+                <span class="label">
+                    길이(M)
+                </span>
+
+                <span class="value">
+                    {{ "{:,.2f}".format(ship.length_m) }}
+                </span>
+
+            </div>
+
+        </section>
+
+
+        <!-- 예정 / 입고 / 잔량 -->
+        <section class="summary-box">
 
             <div class="card plan">
-                <div class="title">예정</div>
-                <div class="bd"><span id="plan_bundle_text">{{ "{:,.0f}".format(ship.plan_qty) }}</span> B/D</div>
-                <div class="mt"><span id="plan_weight_text">{{ "{:,.3f}".format(ship.plan_mt) }}</span> M/T</div>
+
+                <div class="title">
+                    예정
+                </div>
+
+                <div class="bd">
+
+                    <span id="plan_bundle_text">
+                        {{ "{:,.0f}".format(ship.plan_qty) }}
+                    </span>
+
+                    B/D
+
+                </div>
+
+                <div class="mt">
+
+                    <span id="plan_weight_text">
+                        {{ "{:,.3f}".format(ship.plan_mt) }}
+                    </span>
+
+                    M/T
+
+                </div>
+
             </div>
+
 
             <div class="card in">
-                <div class="title">입고</div>
-                <div class="bd"><span id="in_bundle">0</span> B/D</div>
-                <div class="mt"><span id="in_weight">0.000</span> M/T</div>
+
+                <div class="title">
+                    입고
+                </div>
+
+                <div class="bd">
+
+                    <span id="in_bundle">
+                        0
+                    </span>
+
+                    B/D
+
+                </div>
+
+                <div class="mt">
+
+                    <span id="in_weight">
+                        0.000
+                    </span>
+
+                    M/T
+
+                </div>
+
             </div>
+
 
             <div class="card remain">
-                <div class="title">잔량</div>
-                <div class="bd"><span id="remain_bundle">{{ ship.plan_qty }}</span> B/D</div>
-                <div class="mt"><span id="remain_weight">{{ "{:,.3f}".format(ship.plan_mt) }}</span> M/T</div>
+
+                <div class="title">
+                    잔량
+                </div>
+
+                <div class="bd">
+
+                    <span id="remain_bundle">
+                        {{ "{:,.0f}".format(ship.plan_qty) }}
+                    </span>
+
+                    B/D
+
+                </div>
+
+                <div class="mt">
+
+                    <span id="remain_weight">
+                        {{ "{:,.3f}".format(ship.plan_mt) }}
+                    </span>
+
+                    M/T
+
+                </div>
+
             </div>
 
+        </section>
+
+
+        <!-- 집계표 + 입고 입력표 -->
+
+        <section class="list_box">
+
+            <!-- 날짜별 집계 -->
+            <aside class="summary_box">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+                            <th>입고일자</th>
+                            <th>주야</th>
+                            <th>대수</th>
+                            <th>입고수량</th>
+                            <th>입고톤수</th>
+                            <th>잔량수량</th>
+                            <th>잔량톤수</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="dayBody">
+
+                        <!-- 날짜별 집계가 들어갈 곳 -->
+
+                    </tbody>
+
+                </table>
+
+            </aside>
+
+
+            <!-- 입고 입력 및 저장목록 -->
+            <section class="in_box">
+
+                <div class="table-wrap">
+
+                    <table id="inTable">
+
+                        <thead>
+
+                            <tr>
+                                <th>순번</th>
+                                <th>입고일자</th>
+                                <th>주야</th>
+                                <th>차량번호</th>
+                                <th>번들</th>
+                                <th>톤수</th>
+                                <th>저장구역</th>
+                                <th>단중</th>
+                                <th>저장일시</th>
+                                <th>비고</th>
+                                <th>버튼</th>
+                            </tr>
+
+                        </thead>
+
+
+                        <!-- 입력 행 -->
+                        <tbody id="inBody">
+
+                            <tr>
+
+                                <td class="input-title">
+                                    입력
+                                </td>
+
+                                <td class="in-date">
+                                </td>
+
+                                <td class="in-shift">
+                                </td>
+
+                                <td>
+
+                                    <input type="text" class="car-no" placeholder="차량번호" autocomplete="off">
+
+                                </td>
+
+                                <td>
+
+                                    <input type="number" class="bundle-qty" placeholder="번들" min="0">
+
+                                </td>
+
+                                <td>
+
+                                    <input type="number" step="0.001" class="weight-mt" placeholder="톤수" min="0">
+
+                                </td>
+
+                                <td>
+
+                                    <input type="text" class="location-no" placeholder="저장구역" autocomplete="off">
+
+                                </td>
+
+                                <td class="unit-weight">
+                                    0.000
+                                </td>
+
+                                <td class="created-at">
+                                </td>
+
+                                <td>
+
+                                    <textarea class="remark" placeholder="비고사항"></textarea>
+
+                                </td>
+
+                                <td>
+
+                                    <button type="button" id="save" class="btn-save" onclick="saveIn()">
+                                        저장
+                                    </button>
+
+                                </td>
+
+                            </tr>
+
+                        </tbody>
+
+
+                        <!-- 저장된 목록 -->
+                        <tbody id="savedBody">
+
+                            <!-- 저장된 입고내역이 들어갈 곳 -->
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </section>
+
+        </section>
+
+
+
+
+        <div class="guide">
+            ※ 저장된 행 더블클릭 : 수정
         </div>
-        <input type="hidden" id="plan_id" value="{{ ship.plan_id }}">
-        <div class="table-wrap">
-            <table id="inTable">
-                <thead>
-                    <tr>
-                        <th>순번</th>
-                        <th>입고일자</th>
-                        <th>주야</th>
-                        <th>차량번호</th>
-                        <th>번들</th>
-                        <th>톤수</th>
-                        <th>저장구역</th>
-                        <th>단중</th>
-                        <th>저장일시</th>
-                        <th>비고</th>
-                        <th>버튼</th>
-                    </tr>
-                </thead>
 
-                <tbody id="inBody">
-                    <tr>
-                        <td class="input-title">입력</td>
-                        <td class="in-date"></td>
-                        <td class="in-shift"></td>
-
-                        <td><input type="text" class="car-no" placeholder="차량번호"></td>
-                        <td><input type="number" class="bundle-qty" placeholder="번들"></td>
-                        <td><input type="number" step="0.001" class="weight-mt" placeholder="톤수"></td>
-                        <td><input type="text" class="location-no" placeholder="저장구역"></td>
-
-                        <td class="unit-weight">0.000</td>
-                        <td class="created-at"></td>
-                        <td><textarea class="remark" placeholder="비고사항"></textarea></td>
-                        <td>
-                            <span id="save" class="btn-save" onclick="saveIn()">저장</span>
-                        </td>
-                    </tr>
-                </tbody>
-                <tbody id="savedBody">
-                </tbody>
-            </table>
-        </div>
-        <div class="guide">※ 행 더블클릭 : 수정</div>
     </div>
+
+
+    <!-- 수정 모달 -->
     <div id="editModal" class="modal">
+
         <div class="edit-box">
-            <h2>입고 수정</h2>
+
+            <h2>
+                동국제강 입고 수정
+            </h2>
 
             <input type="hidden" id="edit_id">
 
+
             <div class="edit-row">
-                <label>주야</label>
+
+                <label>
+                    주야
+                </label>
 
                 <div class="shift-group">
 
                     <input type="radio" id="edit_day" name="edit_work_type" value="주간">
-                    <label for="edit_day" class="shift-btn">주간</label>
+
+                    <label for="edit_day" class="shift-btn">
+                        주간
+                    </label>
+
 
                     <input type="radio" id="edit_night" name="edit_work_type" value="야간">
-                    <label for="edit_night" class="shift-btn">야간</label>
+
+                    <label for="edit_night" class="shift-btn">
+                        야간
+                    </label>
 
                 </div>
+
             </div>
 
-            <div class="edit-row">
-                <label>차량번호</label>
-                <input type="text" id="edit_car_no">
-            </div>
 
             <div class="edit-row">
-                <label>번들</label>
-                <input type="number" id="edit_bundle">
+
+                <label for="edit_car_no">
+                    차량번호
+                </label>
+
+                <input type="text" id="edit_car_no" autocomplete="off">
+
             </div>
 
-            <div class="edit-row">
-                <label>톤수</label>
-                <input type="number" step="0.001" id="edit_weight">
-            </div>
 
             <div class="edit-row">
-                <label>저장위치</label>
-                <input type="text" id="edit_location">
+
+                <label for="edit_bundle">
+                    번들
+                </label>
+
+                <input type="number" id="edit_bundle" min="0">
+
             </div>
 
+
             <div class="edit-row">
-                <label>비고</label>
-                <input type="text" id="edit_remark">
+
+                <label for="edit_weight">
+                    톤수
+                </label>
+
+                <input type="number" id="edit_weight" step="0.001" min="0">
+
             </div>
+
+
+            <div class="edit-row">
+
+                <label for="edit_location">
+                    저장위치
+                </label>
+
+                <input type="text" id="edit_location" autocomplete="off">
+
+            </div>
+
+
+            <div class="edit-row">
+
+                <label for="edit_remark">
+                    비고
+                </label>
+
+                <input type="text" id="edit_remark" autocomplete="off">
+
+            </div>
+
 
             <div class="edit-btns">
-                <button type="button" class="edit-save" onclick="updateIn_dongkuk()">수정</button>
-                <button class="delet-save" onclick="deleteIn()">삭제</button>
-                <button clscc="cencel-save" onclick="closeModal()">취소</button>
+
+                <button type="button" class="edit-save" onclick="updateIn()">
+                    수정
+                </button>
+
+                <button type="button" class="delet-save" onclick="deleteIn()">
+                    삭제
+                </button>
+
+                <button type="button" class="cencel-save" onclick="closeModal()">
+                    취소
+                </button>
+
             </div>
+
         </div>
-    </div>
 
     </div>
 
+
+    <!-- 푸터 -->
+    <div class="footer">
+        &copy; 2026 bumychoi. All Rights Reserved.
     </div>
+
 </body>
 
 </html>
