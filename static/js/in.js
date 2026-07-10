@@ -81,47 +81,47 @@ $(function () {
 
     let isConfirming = false;
 
-// Enter / Tab 이동
-$(document).on(
-    "keydown",
-    ".car-no, .bundle-qty, .weight-mt, .location-no, .remark",
-    function (e) {
+    // Enter / Tab 이동
+    $(document).on(
+        "keydown",
+        ".car-no, .bundle-qty, .weight-mt, .location-no, .remark",
+        function (e) {
 
-        if (e.key !== "Enter" && e.key !== "Tab") return;
+            if (e.key !== "Enter" && e.key !== "Tab") return;
 
-        e.preventDefault();
-        e.stopPropagation();
+            e.preventDefault();
+            e.stopPropagation();
 
-        if (isConfirming) return;
+            if (isConfirming) return;
 
-        const row = $(this).closest("tr");
+            const row = $(this).closest("tr");
 
-        const inputs = row.find(
-            ".car-no, .bundle-qty, .weight-mt, .location-no, .remark"
-        );
+            const inputs = row.find(
+                ".car-no, .bundle-qty, .weight-mt, .location-no, .remark"
+            );
 
-        const idx = inputs.index(this);
+            const idx = inputs.index(this);
 
-        if (idx < inputs.length - 1) {
-            inputs.eq(idx + 1).focus().select();
-            return;
-        }
-
-        isConfirming = true;
-
-        setTimeout(function () {
-            const ok = confirm("입고 내용을 저장하시겠습니까?");
-
-            if (ok) {
-                saveIn();
-            } else {
-                clearInputRow();
+            if (idx < inputs.length - 1) {
+                inputs.eq(idx + 1).focus().select();
+                return;
             }
 
-            isConfirming = false;
-        }, 0);
-    }
-);
+            isConfirming = true;
+
+            setTimeout(function () {
+                const ok = confirm("입고 내용을 저장하시겠습니까?");
+
+                if (ok) {
+                    saveIn();
+                } else {
+                    clearInputRow();
+                }
+
+                isConfirming = false;
+            }, 0);
+        }
+    );
 
     // 단중 자동 계산
     $(document).on("input", ".bundle-qty, .weight-mt", function () {
@@ -235,6 +235,9 @@ function loadInList() {
 
         $("#savedBody").html(html);
         calcSummary(rows);
+
+        // 날짜별 집계
+        loadDaySummary();
     });
 }
 
@@ -296,7 +299,7 @@ function closeModal() {
     $("#editModal").fadeOut();
 }
 // 현대수정
-function updateIn_hyundai(){
+function updateIn_hyundai() {
 
     const data = {
         id: $("#edit_id").val(),
@@ -313,8 +316,8 @@ function updateIn_hyundai(){
         type: "POST",
         contentType: "application/json",
         data: JSON.stringify(data),
-        success: function(res){
-            if(res.result === "ok"){
+        success: function (res) {
+            if (res.result === "ok") {
                 alert("수정 완료");
                 closeModal();
                 loadInList();
@@ -324,7 +327,7 @@ function updateIn_hyundai(){
 }
 // 동국 수정
 
-function updateIn_dongkuk(){
+function updateIn_dongkuk() {
 
     const data = {
         id: $("#edit_id").val(),
@@ -341,8 +344,8 @@ function updateIn_dongkuk(){
         type: "POST",
         contentType: "application/json",
         data: JSON.stringify(data),
-        success: function(res){
-            if(res.result === "ok"){
+        success: function (res) {
+            if (res.result === "ok") {
                 alert("수정 완료");
                 closeModal();
                 loadInList();
@@ -351,17 +354,17 @@ function updateIn_dongkuk(){
     });
 }
 
-function deleteIn(){
+function deleteIn() {
 
     const id = $("#edit_id").val();
 
-    if(!confirm("삭제하시겠습니까?")) return;
+    if (!confirm("삭제하시겠습니까?")) return;
 
     $.ajax({
         url: "/out_dbar/hyundai/in/delete/" + id,
         type: "POST",
-        success: function(res){
-            if(res.result === "ok"){
+        success: function (res) {
+            if (res.result === "ok") {
                 alert("삭제 완료");
                 closeModal();
                 loadInList();
@@ -378,7 +381,7 @@ function closeModal() {
 }
 
 
-function copyToInput(row){
+function copyToInput(row) {
 
     $(".saved-row").removeClass("selected");
     $(row).addClass("selected");
@@ -397,4 +400,32 @@ function copyToInput(row){
 
     inputRow.find(".unit-weight").text(unit.toFixed(3));
     inputRow.find(".car-no").focus().select();
+}
+
+// 일자, 주야 집계 리스트
+function loadDaySummary() {
+    console.log("loadDaySummary 실행");
+    const planId = $("#plan_id").val();
+
+    $.get("/out_dbar/hyundai/day_summary/" + planId, function (rows) {
+
+        let html = "";
+
+        rows.forEach(function (row) {
+
+            html += `
+                <tr>
+                    <td>${row.in_date}</td>
+                    <td>${row.work_type}</td>
+                    <td>${Number(row.truck_cnt).toLocaleString()}</td>
+                    <td>${Number(row.bundle_qty).toLocaleString()}</td>
+                    <td>${Number(row.weight_mt).toFixed(3)}</td>
+                    <td>${Number(row.remain_bundle).toLocaleString()}</td>
+                    <td>${Number(row.remain_weight).toFixed(3)}</td>
+                </tr>
+            `;
+        });
+
+        $("#dayBody").html(html);
+    });
 }

@@ -219,3 +219,60 @@ def delete_in(id):
     conn.close()
 
     return jsonify({"result":"ok"})
+
+@hyundai_bp.route("/day_summary/<int:plan_id>")
+def day_summary(plan_id):
+
+    conn = get_conn()
+    cur = conn.cursor()
+
+     # 예정 수량/톤수
+    cur.execute("""
+        SELECT bundle_qty, weight_mt
+        FROM plan_d
+        WHERE id = %s
+    """, (plan_id,))
+    plan = cur.fetchone()
+
+    plan_bundle = float(plan["bundle_qty"])
+    plan_weight = float(plan["weight_mt"])
+
+    # 날짜/주야 집계
+    cur.execute("""
+        SELECT
+            in_date,
+            work_type,
+            COUNT(*) AS truck_cnt,
+            SUM(bundle_qty) AS bundle_qty,
+            SUM(weight_mt) AS weight_mt
+        FROM in_d
+        WHERE plan_id = %s
+        GROUP BY in_date, work_type
+        ORDER BY in_date, FIELD(work_type, '주간', '야간')
+    """, (plan_id,))
+
+    rows = cur.fetchall()
+
+    result = []
+
+    remain_bundle = plan_bundle
+    remain_weight = plan_weight
+
+    for row in rows:
+        remain_bundle -= float(row["bundle_qty"])
+        remain_weight -= float(row["weight_mt"])
+
+        result.append({
+            "in_date": row["in_date"].strftime("%Y-%m-%d"),
+            "work_type": row["work_type"],
+            "truck_cnt": row["truck_cnt"],
+            "bundle_qty": float(row["bundle_qty"]),
+            "weight_mt": float(row["weight_mt"]),
+            "remain_bundle": remain_bundle,
+            "remain_weight": remain_weight
+        })
+
+    cur.close()
+    conn.close()
+
+    return jsonify(result)
