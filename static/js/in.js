@@ -1,115 +1,111 @@
+// 현대제철 입고 화면
+// 날짜 상태는 전역에서 한 곳만 관리
+let currentDate = new Date();
+let isSaving = false;
+let isConfirming = false;
+
 $(function () {
 
-    loadInList();
-
+    // datepicker 기본 설정
     $.datepicker.setDefaults({
         dateFormat: "yy-mm-dd",
-        monthNames: ["1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월"],
-        monthNamesShort: ["1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월"],
+        monthNames: [
+            "1월", "2월", "3월", "4월", "5월", "6월",
+            "7월", "8월", "9월", "10월", "11월", "12월"
+        ],
+        monthNamesShort: [
+            "1월", "2월", "3월", "4월", "5월", "6월",
+            "7월", "8월", "9월", "10월", "11월", "12월"
+        ],
         dayNamesMin: ["일", "월", "화", "수", "목", "금", "토"],
         showMonthAfterYear: true,
         yearSuffix: "년"
     });
 
-    let currentDate = new Date();
-
-    function formatDate(date) {
-        const y = date.getFullYear();
-        const m = date.getMonth() + 1;
-        const d = date.getDate();
-
-        return `${y}년 ${m}월 ${d}일`;
-    }
-
-    function formatInputDate(date) {
-        const y = date.getFullYear();
-        const m = String(date.getMonth() + 1).padStart(2, "0");
-        const d = String(date.getDate()).padStart(2, "0");
-
-        return `${y}-${m}-${d}`;
-    }
-
-    function updateAll() {
-        const viewDate = formatDate(currentDate);
-        const inputDate = formatInputDate(currentDate);
-        const shift = $("input[name='shift']:checked").val();
-
-        $("#dateText").html(
-            `${viewDate} <span class="${shift === "주간" ? "shift-day" : "shift-night"}">${shift}</span>`
-        );
-
-        $("#datePicker").val(inputDate);
-        $(".in-date").text(inputDate);
-        $(".in-shift").text(shift);
-
-        $("#inBody .row-no").text("입력");
-
-        loadInList();
-    }
-
+    // 날짜 선택기
     $("#datePicker").datepicker({
         changeYear: true,
         changeMonth: true,
         yearRange: "2020:2035",
+
         onSelect: function (dateText) {
-            currentDate = new Date(dateText);
+            currentDate = parseLocalDate(dateText);
             updateAll();
         }
     });
 
+    // 이전 날짜
     $("#prevDay").on("click", function () {
         currentDate.setDate(currentDate.getDate() - 1);
         updateAll();
     });
 
+    // 다음 날짜
     $("#nextDay").on("click", function () {
         currentDate.setDate(currentDate.getDate() + 1);
         updateAll();
     });
 
+    // 주간 / 야간 변경
     $("input[name='shift']").on("change", function () {
         updateAll();
     });
 
+
+    // 상단 날짜 클릭 시 오늘 날짜로 이동
     $("#dateText").on("click", function () {
-        $("#datePicker").datepicker("show");
+        goToday();
     });
 
+    // 복사 버튼
     $(".copy-btn").on("click", function () {
-        alert("복사 기능 연결 예정");
+        alert("복사할 저장내역 행을 클릭하세요.");
     });
 
-    let isConfirming = false;
-
-    // Enter / Tab 이동
+    // Enter / Tab 입력 이동
     $(document).on(
         "keydown",
-        ".car-no, .bundle-qty, .weight-mt, .location-no, .remark",
+        "#inBody .car-no, " +
+        "#inBody .bundle-qty, " +
+        "#inBody .weight-mt, " +
+        "#inBody .location-no, " +
+        "#inBody .remark",
         function (e) {
 
-            if (e.key !== "Enter" && e.key !== "Tab") return;
+            if (e.key !== "Enter" && e.key !== "Tab") {
+                return;
+            }
 
             e.preventDefault();
             e.stopPropagation();
 
-            if (isConfirming) return;
+            if (isConfirming || isSaving) {
+                return;
+            }
 
             const row = $(this).closest("tr");
 
             const inputs = row.find(
-                ".car-no, .bundle-qty, .weight-mt, .location-no, .remark"
+                ".car-no, " +
+                ".bundle-qty, " +
+                ".weight-mt, " +
+                ".location-no, " +
+                ".remark"
             );
 
-            const idx = inputs.index(this);
+            const index = inputs.index(this);
 
-            if (idx < inputs.length - 1) {
-                inputs.eq(idx + 1).focus().select();
+            // 마지막 칸이 아니면 다음 입력칸 이동
+            if (index < inputs.length - 1) {
+                inputs.eq(index + 1).focus().select();
                 return;
             }
 
+            // 마지막 비고 칸에서 저장 확인
             isConfirming = true;
 
             setTimeout(function () {
+
                 const ok = confirm("입고 내용을 저장하시겠습니까?");
 
                 if (ok) {
@@ -119,25 +115,134 @@ $(function () {
                 }
 
                 isConfirming = false;
+
             }, 0);
         }
     );
 
-    // 단중 자동 계산
-    $(document).on("input", ".bundle-qty, .weight-mt", function () {
+    // 번들 / 톤수 입력 시 단중 자동 계산
+    $(document).on(
+        "input",
+        "#inBody .bundle-qty, #inBody .weight-mt",
+        function () {
 
-        const row = $(this).closest("tr");
+            const row = $(this).closest("tr");
+            calcInputUnit(row);
+        }
+    );
 
-        const bundle = Number(row.find(".bundle-qty").val()) || 0;
-        const weight = Number(row.find(".weight-mt").val()) || 0;
-        const unit = bundle > 0 ? weight / bundle : 0;
-
-        row.find(".unit-weight").text(unit.toFixed(3));
-    });
-
+    // 최초 화면 로딩
     updateAll();
 });
 
+
+// yyyy-mm-dd 문자열을 로컬 날짜로 변환
+function parseLocalDate(dateText) {
+
+    const parts = String(dateText).split("-");
+
+    const year = Number(parts[0]);
+    const month = Number(parts[1]);
+    const day = Number(parts[2]);
+
+    if (!year || !month || !day) {
+        return new Date();
+    }
+
+    return new Date(year, month - 1, day);
+}
+
+
+// 상단 표시용 날짜
+function formatViewDate(date) {
+
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
+
+    return `${year}년 ${month}월 ${day}일`;
+}
+
+
+// input용 yyyy-mm-dd 날짜
+function formatInputDate(date) {
+
+    const year = date.getFullYear();
+
+    const month = String(
+        date.getMonth() + 1
+    ).padStart(2, "0");
+
+    const day = String(
+        date.getDate()
+    ).padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
+}
+
+
+// 현재 선택된 주야
+function getSelectedShift() {
+
+    return $("input[name='shift']:checked").val() || "주간";
+}
+
+
+// 날짜, 주야 변경 시 전체 화면 갱신
+function updateAll() {
+
+    const inputDate = formatInputDate(currentDate);
+    const shift = getSelectedShift();
+
+    // 상단 날짜 표시
+    $("#dateText").html(
+        `${formatViewDate(currentDate)}
+        <span class="${shift === "주간" ? "shift-day" : "shift-night"}">
+            ${shift}
+        </span>`
+    );
+
+    // datepicker 날짜 변경
+    $("#datePicker").datepicker("setDate", currentDate);
+
+    // 입력행 날짜 / 주야만 변경
+    $("#inBody .in-date").text(inputDate);
+    $("#inBody .in-shift").text(shift);
+    $("#inBody .row-no").text("입력");
+
+    // 날짜별 집계 선택 해제
+    $("#dayBody .summary_row").removeClass("selected");
+
+    // 선택 날짜 목록 조회
+    loadInList();
+
+    // 누적 입고 및 잔량 조회
+    loadTotalSummary();
+}
+
+
+// 입력행 단중 계산
+function calcInputUnit(row) {
+
+    const bundle = Number(
+        row.find(".bundle-qty").val()
+    ) || 0;
+
+    const weight = Number(
+        row.find(".weight-mt").val()
+    ) || 0;
+
+    const unit = bundle > 0
+        ? weight / bundle
+        : 0;
+
+    row.find(".unit-weight").text(
+        unit.toFixed(3)
+    );
+}
+
+
+// 입력행 초기화
 function clearInputRow() {
 
     const row = $("#inBody tr:first");
@@ -154,22 +259,91 @@ function clearInputRow() {
 }
 
 
-let isSaving = false;
+// 저장 입력값 검사
+function validateInput(data) {
 
+    if (!data.plan_id) {
+        return "계획 ID가 없습니다.";
+    }
+
+    if (!data.in_date) {
+        return "입고일자를 확인하세요.";
+    }
+
+    if (!data.work_type) {
+        return "주간 또는 야간을 선택하세요.";
+    }
+
+    if (!data.car_no) {
+        return "차량번호를 입력하세요.";
+    }
+
+    if (!(Number(data.bundle_qty) > 0)) {
+        return "입고수량을 입력하세요.";
+    }
+
+    if (!(Number(data.weight_mt) > 0)) {
+        return "입고톤수를 입력하세요.";
+    }
+
+    return "";
+}
+
+
+// 입고 저장
 function saveIn() {
+
+    if (isSaving) {
+        return;
+    }
 
     const row = $("#inBody tr:first");
 
     const data = {
         plan_id: $("#plan_id").val(),
-        in_date: row.find(".in-date").text(),
-        work_type: row.find(".in-shift").text(),
-        car_no: row.find(".car-no").val(),
-        bundle_qty: row.find(".bundle-qty").val(),
-        weight_mt: row.find(".weight-mt").val(),
-        location_no: row.find(".location-no").val(),
-        remark: row.find(".remark").val()
+
+        in_date: row
+            .find(".in-date")
+            .text()
+            .trim(),
+
+        work_type: row
+            .find(".in-shift")
+            .text()
+            .trim(),
+
+        car_no: row
+            .find(".car-no")
+            .val()
+            .trim(),
+
+        bundle_qty: row
+            .find(".bundle-qty")
+            .val(),
+
+        weight_mt: row
+            .find(".weight-mt")
+            .val(),
+
+        location_no: row
+            .find(".location-no")
+            .val()
+            .trim(),
+
+        remark: row
+            .find(".remark")
+            .val()
+            .trim()
     };
+
+    const message = validateInput(data);
+
+    if (message) {
+        alert(message);
+        return;
+    }
+
+    isSaving = true;
 
     $.ajax({
         url: "/out_dbar/hyundai/in/save",
@@ -180,207 +354,489 @@ function saveIn() {
         success: function (res) {
 
             if (res.result === "ok") {
+
                 alert("저장 완료");
 
                 clearInputRow();
+
                 loadInList();
+                loadTotalSummary();
 
             } else {
-                alert(res.message);
+
+                alert(
+                    res.message || "저장에 실패했습니다."
+                );
             }
         },
 
         error: function (xhr) {
-            alert("저장 실패 : " + xhr.responseText);
+
+            alert(
+                "저장 실패 : " +
+                (xhr.responseText || xhr.statusText)
+            );
+        },
+
+        complete: function () {
+            isSaving = false;
         }
     });
 }
 
 
+// 선택 날짜 / 주야 입고내역 조회
 function loadInList() {
 
     const planId = $("#plan_id").val();
-    const inDate = $("#datePicker").val();
-    const workType = $("input[name='shift']:checked").val();
+    const inDate = formatInputDate(currentDate);
+    const workType = getSelectedShift();
 
-    $.get("/out_dbar/hyundai/in/list/" + planId, {
-        in_date: inDate,
-        work_type: workType
-    }, function (rows) {
-        let html = "";
+    if (!planId) {
+        return;
+    }
 
-        rows.forEach(function (row, idx) {
-            const unit = Number(row.bundle_qty) > 0
-                ? Number(row.weight_mt) / Number(row.bundle_qty)
-                : 0;
+    $.ajax({
+        url:
+            "/out_dbar/hyundai/in/list/" +
+            encodeURIComponent(planId),
 
-            html += `
-                <tr class="saved-row" onclick="copyToInput(this)">
-                    <td>${rows.length - idx}</td>
-                    <td class="in-date">${row.in_date}</td>
-                    <td class="in-shift">${row.work_type}</td>
-                    <td class="car-no">${row.car_no}</td>
-                    <td class="bundle-qty">${Number(row.bundle_qty).toLocaleString()}</td>
-                    <td class="weight-mt">${Number(row.weight_mt).toFixed(3)}</td>
-                    <td class="location-no">${row.location_no || ""}</td>
-                    <td class="unit-weight">${unit.toFixed(3)}</td>
-                    <td class="created-at">${row.created_time}</td>
-                    <td class="remark">${row.remark || ""}</td>
-                    <td>
-                        <button class="btn-save" type="button " onclick="event.stopPropagation(); openEdit(${row.id})">수정</button>
+        type: "GET",
+
+        data: {
+            in_date: inDate,
+            work_type: workType
+        },
+
+        success: function (rows) {
+
+            let html = "";
+
+            rows = rows || [];
+
+            rows.forEach(function (row, index) {
+
+                const bundle =
+                    Number(row.bundle_qty) || 0;
+
+                const weight =
+                    Number(row.weight_mt) || 0;
+
+                const unit = bundle > 0
+                    ? weight / bundle
+                    : 0;
+                const key = `summary_${row.in_date}_${row.work_type}`;
+                html += `
+                    <tr class="saved-row"
+                        data-key="${key}"
+                        onclick="copyToInput(this)">
+
+                        <td>
+                            ${rows.length - index}
+                        </td>
+
+                        <td class="in-date">
+                            ${escapeHtml(row.in_date)}
+                        </td>
+
+                        <td class="in-shift">
+                            ${escapeHtml(row.work_type)}
+                        </td>
+
+                        <td class="car-no">
+                            ${escapeHtml(row.car_no)}
+                        </td>
+
+                        <td class="bundle-qty">
+                            ${bundle.toLocaleString()}
+                        </td>
+
+                        <td class="weight-mt">
+                            ${weight.toFixed(3)}
+                        </td>
+
+                        <td class="location-no">
+                            ${escapeHtml(row.location_no || "")}
+                        </td>
+
+                        <td class="unit-weight">
+                            ${unit.toFixed(3)}
+                        </td>
+
+                        <td class="created-at">
+                            ${escapeHtml(row.created_time || "")}
+                        </td>
+
+                        <td class="remark">
+                            ${escapeHtml(row.remark || "")}
+                        </td>
+
+                        <td>
+                            <button
+                                class="btn-save"
+                                type="button"
+                                onclick="
+                                    event.stopPropagation();
+                                    openEdit(${Number(row.id)});
+                                ">
+                                수정
+                            </button>
+                        </td>
+
+                    </tr>
+                `;
+            });
+
+            $("#savedBody").html(html);
+
+            // 날짜별 집계 조회
+            loadDaySummary();
+        },
+
+        error: function (xhr) {
+
+            console.error(
+                "입고목록 조회 실패:",
+                xhr.responseText || xhr.statusText
+            );
+
+            $("#savedBody").html(`
+                <tr>
+                    <td colspan="11">
+                        입고목록을 불러오지 못했습니다.
                     </td>
                 </tr>
-            `;
-        });
-
-        $("#savedBody").html(html);
-        calcSummary(rows);
-
-        // 날짜별 집계
-        loadDaySummary();
+            `);
+        }
     });
 }
 
+
+// 누적 입고현황 조회
+function loadTotalSummary() {
+
+    const planId = $("#plan_id").val();
+
+    if (!planId) {
+        return;
+    }
+
+    $.ajax({
+        url:
+            "/out_dbar/hyundai/in/list/" +
+            encodeURIComponent(planId),
+
+        type: "GET",
+
+        success: function (rows) {
+            calcSummary(rows || []);
+        },
+
+        error: function (xhr) {
+
+            console.error(
+                "누적 집계 조회 실패:",
+                xhr.responseText || xhr.statusText
+            );
+        }
+    });
+}
+
+
+// 누적 입고 및 잔량 계산
 function calcSummary(rows) {
 
     let inBundle = 0;
     let inWeight = 0;
 
     rows.forEach(function (row) {
-        inBundle += Number(row.bundle_qty) || 0;
-        inWeight += Number(row.weight_mt) || 0;
+
+        inBundle +=
+            Number(row.bundle_qty) || 0;
+
+        inWeight +=
+            Number(row.weight_mt) || 0;
     });
 
-    const planBundle = Number($("#plan_bundle").val()) || 0;
-    const planWeight = Number($("#plan_weight").val()) || 0;
+    const planBundle =
+        Number($("#plan_bundle").val()) || 0;
 
-    // 잔량 계산
-    const remainBundle = planBundle - inBundle;
-    const remainWeight = planWeight - inWeight;
+    const planWeight =
+        Number($("#plan_weight").val()) || 0;
 
-    $("#in_bundle").text(inBundle.toLocaleString());
-    $("#in_weight").text(
-        inWeight.toLocaleString(undefined, {
-            minimumFractionDigits: 3,
-            maximumFractionDigits: 3
-        })
+    const remainBundle =
+        planBundle - inBundle;
+
+    const remainWeight =
+        planWeight - inWeight;
+
+    $("#in_bundle").text(
+        inBundle.toLocaleString()
     );
 
-    $("#remain_bundle").text(remainBundle.toLocaleString());
+    $("#in_weight").text(
+        formatNumber3(inWeight)
+    );
+
+    $("#remain_bundle").text(
+        remainBundle.toLocaleString()
+    );
+
     $("#remain_weight").text(
-        remainWeight.toLocaleString(undefined, {
-            minimumFractionDigits: 3,
-            maximumFractionDigits: 3
-        })
+        formatNumber3(remainWeight)
     );
 }
 
+
+// 소수점 3자리 표시
+function formatNumber3(value) {
+
+    return Number(value || 0).toLocaleString(
+        undefined,
+        {
+            minimumFractionDigits: 3,
+            maximumFractionDigits: 3
+        }
+    );
+}
+
+
+// 수정 모달 열기
 function openEdit(id) {
 
-    $.get("/out_dbar/hyundai/in/detail/" + id, function (row) {
+    $.ajax({
+        url:
+            "/out_dbar/hyundai/in/detail/" +
+            encodeURIComponent(id),
 
-        $("#edit_id").val(row.id);
+        type: "GET",
 
-        $("input[name='edit_work_type'][value='" + row.work_type + "']")
-            .prop("checked", true);
+        success: function (row) {
 
-        $("#edit_car_no").val(row.car_no);
-        $("#edit_bundle").val(row.bundle_qty);
-        $("#edit_weight").val(row.weight_mt);
-        $("#edit_location").val(row.location_no);
-        $("#edit_remark").val(row.remark);
+            $("#edit_id").val(row.id);
 
-        $("#editModal").fadeIn(200);
+            $(
+                "input[name='edit_work_type']" +
+                "[value='" + row.work_type + "']"
+            ).prop("checked", true);
 
+            $("#edit_car_no").val(
+                row.car_no || ""
+            );
+
+            $("#edit_bundle").val(
+                row.bundle_qty || ""
+            );
+
+            $("#edit_weight").val(
+                row.weight_mt || ""
+            );
+
+            $("#edit_location").val(
+                row.location_no || ""
+            );
+
+            $("#edit_remark").val(
+                row.remark || ""
+            );
+
+            $("#editModal").fadeIn(200);
+        },
+
+        error: function (xhr) {
+
+            alert(
+                "수정 자료 조회 실패 : " +
+                (xhr.responseText || xhr.statusText)
+            );
+        }
     });
 }
 
+
+// 수정 모달 닫기
 function closeModal() {
+
     $("#editModal").fadeOut();
 }
-// 현대수정
+
+
+// 수정 데이터 가져오기
+function getEditData() {
+
+    return {
+        id: $("#edit_id").val(),
+
+        work_type:
+            $("input[name='edit_work_type']:checked")
+                .val(),
+
+        car_no:
+            $("#edit_car_no")
+                .val()
+                .trim(),
+
+        bundle_qty:
+            $("#edit_bundle").val(),
+
+        weight_mt:
+            $("#edit_weight").val(),
+
+        location_no:
+            $("#edit_location")
+                .val()
+                .trim(),
+
+        remark:
+            $("#edit_remark")
+                .val()
+                .trim()
+    };
+}
+
+
+// 현대제철 수정
 function updateIn_hyundai() {
 
-    const data = {
-        id: $("#edit_id").val(),
-        work_type: $("input[name='edit_work_type']:checked").val(),
-        car_no: $("#edit_car_no").val(),
-        bundle_qty: $("#edit_bundle").val(),
-        weight_mt: $("#edit_weight").val(),
-        location_no: $("#edit_location").val(),
-        remark: $("#edit_remark").val()
-    };
-
-    $.ajax({
-        url: "/out_dbar/hyundai/in/update",
-        type: "POST",
-        contentType: "application/json",
-        data: JSON.stringify(data),
-        success: function (res) {
-            if (res.result === "ok") {
-                alert("수정 완료");
-                closeModal();
-                loadInList();
-            }
-        }
-    });
+    updateIn(
+        "/out_dbar/hyundai/in/update"
+    );
 }
-// 동국 수정
 
+
+// 동국제강 수정
 function updateIn_dongkuk() {
 
-    const data = {
-        id: $("#edit_id").val(),
-        work_type: $("input[name='edit_work_type']:checked").val(),
-        car_no: $("#edit_car_no").val(),
-        bundle_qty: $("#edit_bundle").val(),
-        weight_mt: $("#edit_weight").val(),
-        location_no: $("#edit_location").val(),
-        remark: $("#edit_remark").val()
-    };
+    updateIn(
+        "/out_dbar/dongkuk/in/update"
+    );
+}
+
+
+// 공통 수정 처리
+function updateIn(url) {
+
+    const data = getEditData();
+
+    if (!data.id) {
+
+        alert("수정할 자료가 없습니다.");
+        return;
+    }
+
+    if (!data.work_type) {
+
+        alert("주간 또는 야간을 선택하세요.");
+        return;
+    }
+
+    if (!data.car_no) {
+
+        alert("차량번호를 입력하세요.");
+        return;
+    }
+
+    if (!(Number(data.bundle_qty) > 0)) {
+
+        alert("입고수량을 입력하세요.");
+        return;
+    }
+
+    if (!(Number(data.weight_mt) > 0)) {
+
+        alert("입고톤수를 입력하세요.");
+        return;
+    }
 
     $.ajax({
-        url: "/out_dbar/dongkuk/in/update",
+        url: url,
         type: "POST",
         contentType: "application/json",
         data: JSON.stringify(data),
+
         success: function (res) {
+
             if (res.result === "ok") {
+
                 alert("수정 완료");
+
                 closeModal();
+
                 loadInList();
+                loadTotalSummary();
+
+            } else {
+
+                alert(
+                    res.message || "수정에 실패했습니다."
+                );
             }
+        },
+
+        error: function (xhr) {
+
+            alert(
+                "수정 실패 : " +
+                (xhr.responseText || xhr.statusText)
+            );
         }
     });
 }
 
+
+// 현대제철 입고 삭제
 function deleteIn() {
 
     const id = $("#edit_id").val();
 
-    if (!confirm("삭제하시겠습니까?")) return;
+    if (!id) {
+
+        alert("삭제할 자료가 없습니다.");
+        return;
+    }
+
+    if (!confirm("삭제하시겠습니까?")) {
+        return;
+    }
 
     $.ajax({
-        url: "/out_dbar/hyundai/in/delete/" + id,
+        url:
+            "/out_dbar/hyundai/in/delete/" +
+            encodeURIComponent(id),
+
         type: "POST",
+
         success: function (res) {
+
             if (res.result === "ok") {
+
                 alert("삭제 완료");
+
                 closeModal();
+
                 loadInList();
+                loadTotalSummary();
+
+            } else {
+
+                alert(
+                    res.message || "삭제에 실패했습니다."
+                );
             }
+        },
+
+        error: function (xhr) {
+
+            alert(
+                "삭제 실패 : " +
+                (xhr.responseText || xhr.statusText)
+            );
         }
     });
 }
 
 
-
-function closeModal() {
-
-    $("#editModal").fadeOut();
-}
-
-
+// 저장목록 클릭 시 입력행으로 복사
 function copyToInput(row) {
 
     $(".saved-row").removeClass("selected");
@@ -388,44 +844,193 @@ function copyToInput(row) {
 
     const inputRow = $("#inBody tr:first");
 
-    inputRow.find(".car-no").val($(row).find(".car-no").text().trim());
-    inputRow.find(".bundle-qty").val($(row).find(".bundle-qty").text().trim().replaceAll(",", ""));
-    inputRow.find(".weight-mt").val($(row).find(".weight-mt").text().trim());
-    inputRow.find(".location-no").val($(row).find(".location-no").text().trim());
-    inputRow.find(".remark").val($(row).find(".remark").text().trim());
+    inputRow.find(".car-no").val(
+        $(row)
+            .find(".car-no")
+            .text()
+            .trim()
+    );
 
-    const bundle = Number(inputRow.find(".bundle-qty").val()) || 0;
-    const weight = Number(inputRow.find(".weight-mt").val()) || 0;
-    const unit = bundle > 0 ? weight / bundle : 0;
+    inputRow.find(".bundle-qty").val(
+        $(row)
+            .find(".bundle-qty")
+            .text()
+            .trim()
+            .replaceAll(",", "")
+    );
 
-    inputRow.find(".unit-weight").text(unit.toFixed(3));
-    inputRow.find(".car-no").focus().select();
+    inputRow.find(".weight-mt").val(
+        $(row)
+            .find(".weight-mt")
+            .text()
+            .trim()
+    );
+
+    inputRow.find(".location-no").val(
+        $(row)
+            .find(".location-no")
+            .text()
+            .trim()
+    );
+
+    inputRow.find(".remark").val(
+        $(row)
+            .find(".remark")
+            .text()
+            .trim()
+    );
+
+    calcInputUnit(inputRow);
+
+    inputRow
+        .find(".car-no")
+        .focus()
+        .select();
 }
 
-// 일자, 주야 집계 리스트
+
+// 일자 / 주야 집계 조회
 function loadDaySummary() {
-    console.log("loadDaySummary 실행");
+
     const planId = $("#plan_id").val();
 
-    $.get("/out_dbar/hyundai/day_summary/" + planId, function (rows) {
+    if (!planId) {
+        return;
+    }
 
-        let html = "";
+    $.ajax({
+        url:
+            "/out_dbar/hyundai/day_summary/" +
+            encodeURIComponent(planId),
 
-        rows.forEach(function (row) {
+        type: "GET",
 
-            html += `
-                <tr>
-                    <td>${row.in_date}</td>
-                    <td>${row.work_type}</td>
-                    <td>${Number(row.truck_cnt).toLocaleString()}</td>
-                    <td>${Number(row.bundle_qty).toLocaleString()}</td>
-                    <td>${Number(row.weight_mt).toFixed(3)}</td>
-                    <td>${Number(row.remain_bundle).toLocaleString()}</td>
-                    <td>${Number(row.remain_weight).toFixed(3)}</td>
-                </tr>
-            `;
-        });
+        success: function (rows) {
 
-        $("#dayBody").html(html);
+            let html = "";
+
+            rows = rows || [];
+
+            rows.forEach(function (row) {
+
+                html += `
+                    <tr
+                        class="summary_row"
+                        id="summary_${row.in_date}_${row.work_type}"
+                        data-date="${escapeHtml(row.in_date)}"
+                        data-shift="${escapeHtml(row.work_type)}"
+                        onclick="selectDaySummary(this)">
+
+                        <td>
+                            ${escapeHtml(row.in_date)}
+                        </td>
+
+                        <td>
+                            ${escapeHtml(row.work_type)}
+                        </td>
+
+                        <td>
+                            ${Number(
+                    row.truck_cnt || 0
+                ).toLocaleString()}
+                        </td>
+
+                        <td>
+                            ${Number(
+                    row.bundle_qty || 0
+                ).toLocaleString()}
+                        </td>
+
+                        <td>
+                            ${Number(
+                    row.weight_mt || 0
+                ).toFixed(3)}
+                        </td>
+
+                        <td>
+                            ${Number(
+                    row.remain_bundle || 0
+                ).toLocaleString()}
+                        </td>
+
+                        <td>
+                            ${Number(
+                    row.remain_weight || 0
+                ).toFixed(3)}
+                        </td>
+
+                    </tr>
+                `;
+            });
+
+            $("#dayBody").html(html);
+        },
+
+        error: function (xhr) {
+
+            console.error(
+                "날짜별 집계 조회 실패:",
+                xhr.responseText || xhr.statusText
+            );
+        }
     });
+}
+
+
+// 날짜별 집계 행 클릭
+function selectDaySummary(row) {
+
+    const inDate = String($(row).data("date"));
+    const workType = String($(row).data("shift"));
+    const key = row.id;
+
+    currentDate = parseLocalDate(inDate);
+
+    $("input[name='shift'][value='" + workType + "']")
+        .prop("checked", true);
+
+    // 날짜만 변경
+    $("#datePicker").datepicker("setDate", currentDate);
+
+    $("#dateText").html(
+        `${formatViewDate(currentDate)}
+        <span class="${workType === "주간" ? "shift-day" : "shift-night"}">
+            ${workType}
+        </span>`
+    );
+
+    $("#inBody .in-date").text(inDate);
+    $("#inBody .in-shift").text(workType);
+
+    $("#dayBody .summary_row").removeClass("selected");
+    $(row).addClass("selected");
+
+    // 여기!!
+    $("#savedBody .saved-row").hide();
+
+    $("#savedBody .saved-row").filter(function () {
+        return $(this).attr("data-key") === key;
+    }).show();
+}
+
+// HTML 특수문자 처리
+function escapeHtml(value) {
+
+    return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+}
+
+function goToday() {
+
+    currentDate = new Date();
+
+    // 오늘 날짜의 주야는 현재 선택값 유지
+    updateAll();
+
+    // 왼쪽 날짜별 집계 선택 해제
+    $("#dayBody .summary_row").removeClass("selected");
 }

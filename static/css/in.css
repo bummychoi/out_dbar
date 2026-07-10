@@ -691,3 +691,8 @@ th:nth-child(11), td:nth-child(11) { width: 100px; padding: 0; height:52px;}
 .in_box th:nth-child(9), .in_box td:nth-child(9){width:10%;}
 .in_box th:nth-child(10), .in_box td:nth-child(10){width:11%;}
 .in_box th:nth-child(11), .in_box td:nth-child(11){width:8%;}
+
+
+.in-date-text{
+    cursor:pointer;
+}
