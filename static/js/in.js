@@ -921,7 +921,7 @@ function loadDaySummary() {
                         data-shift="${escapeHtml(row.work_type)}"
                         onclick="selectDaySummary(this)">
 
-                        <td>
+                        <td style="font-size:13px">
                             ${escapeHtml(row.in_date)}
                         </td>
 
@@ -989,7 +989,6 @@ function selectDaySummary(row) {
     $("input[name='shift'][value='" + workType + "']")
         .prop("checked", true);
 
-    // 날짜만 변경
     $("#datePicker").datepicker("setDate", currentDate);
 
     $("#dateText").html(
@@ -1005,12 +1004,22 @@ function selectDaySummary(row) {
     $("#dayBody .summary_row").removeClass("selected");
     $(row).addClass("selected");
 
-    // 여기!!
+    // 전체 저장행 숨김
     $("#savedBody .saved-row").hide();
 
+    // 선택 날짜/주야만 표시
     $("#savedBody .saved-row").filter(function () {
         return $(this).attr("data-key") === key;
     }).show();
+
+    // 현재 보이는 행 기준 순번 다시 계산
+    const visibleRows = $("#savedBody .saved-row:visible");
+
+    visibleRows.each(function (index) {
+        $(this)
+            .find("td:first")
+            .text(visibleRows.length - index);
+    });
 }
 
 // HTML 특수문자 처리
@@ -1026,7 +1035,7 @@ function escapeHtml(value) {
 
 function goToday() {
     console.log("goToday 실행");
-     // 오늘 날짜
+    // 오늘 날짜
     currentDate = new Date();
 
     // 오늘 날짜를 datepicker에도 적용

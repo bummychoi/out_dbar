@@ -56,8 +56,8 @@ $(function () {
         const id = checked.val();
         const company = checked.data("company");
 
-        const width = Math.min(1500, screen.availWidth - 20);
-        const height = Math.min(900, screen.availHeight - 60);
+        const width = Math.min(1900, screen.availWidth - 20);
+        const height = Math.min(1100, screen.availHeight - 40);
 
         const left = Math.round((screen.availWidth - width) / 2);
         const top = Math.round((screen.availHeight - height) / 2);
