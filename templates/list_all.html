@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+total_truck
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>입고내역 조회</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/list_all.css') }}">
+
+    <script defer src="{{ url_for('static', filename='js/surch.js') }}">
+    </script>
+</head>
+
+<body>
+
+    <div class="wrap">
+
+        <!-- 상단 조회조건 -->
+        <header class="header">
+
+            <div class="title-box">
+                <h2>입고내역 조회</h2>
+            </div>
+
+            <div class="search-box">
+
+                <div class="search-item">
+                    <label for="in_date">조회일자</label>
+
+                    <input type="date" id="in_date" value="{{ in_date }}">
+                </div>
+
+                <div class="search-item">
+                    <label for="work_type">주·야</label>
+
+                    <select id="work_type">
+                        <option value="" {% if work_type=="" %}selected{% endif %}>
+                            전체
+                        </option>
+
+                        <option value="주간" {% if work_type=="주간" %}selected{% endif %}>
+                            주간
+                        </option>
+
+                        <option value="야간" {% if work_type=="야간" %}selected{% endif %}>
+                            야간
+                        </option>
+                    </select>
+                </div>
+
+                <div class="search-item">
+                    <label for="company">화주</label>
+
+                    <select id="company">
+                        <option value="" {% if company=="" %}selected{% endif %}>
+                            전체
+                        </option>
+
+                        <option value="hyundai" {% if company=="hyundai" %}selected{% endif %}>
+                            현대제철
+                        </option>
+
+                        <option value="dongkuk" {% if company=="dongkuk" %}selected{% endif %}>
+                            동국제강
+                        </option>
+                    </select>
+                </div>
+
+                <button type="button" class="search-btn" onclick="searchList()">
+                    조회
+                </button>
+
+
+            </div>
+
+        </header>
+
+
+        <!-- 전체 합계 -->
+        <section class="summary-box">
+
+            <div class="summary-card">
+                <span class="summary-title">차량대수</span>
+
+                <div class="summary-value">
+                    <strong id="total_truck">
+                        {{ "{:,.0f}".format(total_truck | default(0)) }}
+                    </strong>
+                    <span>대</span>
+                </div>
+            </div>
+
+            <div class="summary-card">
+                <span class="summary-title">입고수량</span>
+
+                <div class="summary-value">
+                    <strong id="total_bundle">
+                        {{ "{:,.0f}".format(total_bundle | default(0)) }}
+                    </strong>
+                    <span>B/D</span>
+                </div>
+            </div>
+
+            <div class="summary-card">
+                <span class="summary-title">입고톤수</span>
+
+                <div class="summary-value">
+                    <strong id="total_weight">
+                        {{ "{:,.3f}".format(total_weight | default(0)) }}
+                    </strong>
+                    <span>MT</span>
+                </div>
+            </div>
+
+        </section>
+
+
+        <!-- 조회 결과 -->
+        <main class="result-box">
+
+            <div class="result-header">
+
+                <h3>입고 집계내역</h3>
+
+                <span>
+                    총
+                    <strong id="result_count">
+                        {{ rows | length }}
+                    </strong>건
+                </span>
+
+            </div>
+
+            <div class="table-wrap">
+
+                <table class="result-table">
+                    <colgroup>
+                        <col style="width:60px">
+                        <col style="width:80px">
+                        <col style="width:180px">
+                        <col style="width:220px">
+                        <col style="width:100px">
+                        <col style="width:110px">
+                        <col style="width:90px">
+                        <col style="width:110px">
+                        <col style="width:120px">
+                        <col style="width:130px">
+                    </colgroup>
+
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>주,야</th>
+                            <th>화주</th>
+                            <th>선적명</th>
+                            <th style="font-size: 11px;">단면색 / 배선번호</th>
+                            <th>강종</th>
+                            <th>사이즈</th>
+                            <th>길이</th>
+                            <th>차량대수</th>
+                            <th>입고수량</th>
+                            <th>입고톤수</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="listBody">
+
+                        {% for row in rows %}
+
+                        <tr ondblclick="openIn('{{ row.company }}', '{{ row.plan_id }}')">
+                            <td>{{ loop.index }}</td>
+                            <td>
+                                {% if row.work_type == "주간" %}
+                                <span class="work-type day">주간</span>
+                                {% elif row.work_type == "야간" %}
+                                <span class="work-type night">야간</span>
+                                {% else %}
+                                {{ row.work_type }}
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if row.company == "hyundai" %}
+                                <span class="company hyundai">현대제철</span>
+                                {% elif row.company == "dongkuk" %}
+                                <span class="company dongkuk">동국제강</span>
+                                {% else %}
+                                {{ row.company }}
+                                {% endif %}
+                            </td>
+
+                            <td>{{ row.vessel_name }}</td>
+                            <td>
+                                {% if row.color_name == "yellow" %}
+                                <span class="color-dot yellow"></span> 노랑
+
+                                {% elif row.color_name == "green" %}
+                                <span class="color-dot green"></span> 녹색
+
+                                {% elif row.color_name == "red" %}
+                                <span class="color-dot red"></span> 빨강
+
+                                {% elif row.color_name == "blue" %}
+                                <span class="color-dot blue"></span> 파랑
+
+                                {% else %}
+                                {{ row.color_name }}
+                                {% endif %}
+                            </td>
+                            <td>{{ row.steel_type }}</td>
+                            <td>{{ row.size_name }}</td>
+                            <td>{{ row.length_m }}</td>
+
+                            <td>
+                                {{ "{:,.0f}".format(row.truck_cnt) }}
+                            </td>
+
+                            <td>
+                                {{ "{:,.0f}".format(row.bundle_qty) }}
+                            </td>
+
+                            <td>
+                                {{ "{:,.3f}".format(row.weight_mt) }}
+                            </td>
+                        </tr>
+
+                        {% else %}
+
+                        <tr class="empty-row">
+                            <td colspan="10">
+                                {{ in_date }}의 조회된 입고내역이 없습니다.
+                            </td>
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </main>
+
+    </div>
+
+</body>
+
+</html>

@@ -340,13 +340,120 @@ def delete_detail():
     })
 
 
-# # 현대제철 입고관리
-# @out_dbar_bp.route("/hyundai")
-# def hyundai():
-#     return render_template("out_dbar/hyundai.html")
+@out_dbar_bp.route("/list_all")
+def list_all():
 
+    in_date = request.args.get("date", "")
+    work_type = request.args.get("work_type", "")
+    company = request.args.get("company", "")
 
-# # 동국제강 입고관리
-# @out_dbar_bp.route("/dongkuk")
-# def dongkuk():
-#     return render_template("out_dbar/dongkuk.html")
+    conn = get_conn()
+    cur = conn.cursor()
+
+    # =========================
+    # 상세 집계
+    # =========================
+    sql = """
+        SELECT
+            p.id AS plan_id,
+            i.work_type,
+            p.company,
+            p.vessel_name,
+            p.color_name,
+            p.steel_type,
+            p.size_name,
+            p.length_m,
+
+            COUNT(*) AS truck_cnt,
+            IFNULL(SUM(i.bundle_qty), 0) AS bundle_qty,
+            IFNULL(SUM(i.weight_mt), 0) AS weight_mt
+
+        FROM in_d i
+
+        JOIN plan_d p
+            ON i.plan_id = p.id
+
+        WHERE i.in_date = %s
+    """
+
+    params = [in_date]
+
+    if work_type:
+        sql += " AND i.work_type = %s"
+        params.append(work_type)
+
+    if company:
+        sql += " AND p.company = %s"
+        params.append(company)
+
+    sql += """
+        GROUP BY
+            p.id,
+            i.work_type,
+            p.company,
+            p.vessel_name,
+            p.color_name,
+            p.steel_type,
+            p.size_name,
+            p.length_m
+
+        ORDER BY
+            i.work_type,
+            p.company,
+            p.vessel_name,
+            p.color_name,
+            p.steel_type,
+            p.size_name,
+            p.length_m
+    """
+
+    cur.execute(sql, tuple(params))
+    rows = cur.fetchall()
+
+    # =========================
+    # 상단 전체 합계
+    # =========================
+    total_sql = """
+        SELECT
+            COUNT(*) AS total_truck,
+            IFNULL(SUM(i.bundle_qty), 0) AS total_bundle,
+            IFNULL(SUM(i.weight_mt), 0) AS total_weight
+
+        FROM in_d i
+
+        JOIN plan_d p
+            ON i.plan_id = p.id
+
+        WHERE i.in_date = %s
+    """
+
+    total_params = [in_date]
+
+    if work_type:
+        total_sql += " AND i.work_type = %s"
+        total_params.append(work_type)
+
+    if company:
+        total_sql += " AND p.company = %s"
+        total_params.append(company)
+
+    cur.execute(total_sql, tuple(total_params))
+    total = cur.fetchone()
+
+    total_truck = int(total["total_truck"] or 0)
+    total_bundle = int(total["total_bundle"] or 0)
+    total_weight = float(total["total_weight"] or 0)
+
+    cur.close()
+    conn.close()
+
+    return render_template(
+        "list_all.html",
+        in_date=in_date,
+        work_type=work_type,
+        company=company,
+        rows=rows,
+        total_truck=total_truck,
+        total_bundle=total_bundle,
+        total_weight=total_weight
+    )

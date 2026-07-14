@@ -7,6 +7,7 @@
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
     <script src="{{ url_for('static', filename='/js/main.js') }}"></script>
+    <script src="{{url_for('static', filename='/js/surch.js')}}"></script>
     <title>수출철근 입출고</title>
 </head>
 
@@ -19,6 +20,7 @@
             <div class="date-box" id="today">2026-06-17 요일</div>
 
             <nav class="nav">
+                <button  style="font-size: 18px;" onclick="list_all()">입고내역조회</button>
                 <button onclick="list_up()">목록생성</button>
                 <button id="btnIn">입고</button>
                 <button id="btnShip">선적</button>
