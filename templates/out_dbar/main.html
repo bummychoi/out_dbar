@@ -1,6 +1,7 @@
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="{{url_for('static',filename='css/main_lay.css')}}">
+    <link rel="stylesheet" href="{{url_for('static',filename='css/main.css')}}">
 
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
 
@@ -20,7 +21,7 @@
             <div class="date-box" id="today">2026-06-17 요일</div>
 
             <nav class="nav">
-                <button  style="font-size: 18px;" onclick="list_all()">입고내역조회</button>
+                <button style="font-size: 18px;" onclick="list_all()">입고내역조회</button>
                 <button onclick="list_up()">목록생성</button>
                 <button id="btnIn">입고</button>
                 <button id="btnShip">선적</button>
@@ -67,7 +68,14 @@
                                 <th>번들</th>
                                 <th>톤수</th>
                                 <th>단중</th>
-                                <th>비고사항</th>
+                                <th>입고수량</th>
+                                <th>입고톤량</th>
+                                <th>선적수량</th>
+                                <th>선적톤</th>
+                                <th>반품수량</th>
+                                <th>반품톤</th>
+                                <th>재고수량</th>
+                                <th>재고톤</th>
                                 <th>저장일시</th>
                             </tr>
                         </thead>
@@ -75,13 +83,16 @@
                         <tbody>
                             {% for row in hyundai_list %}
                             <tr ondblclick="openPlan('{{ row.ship_id }}')">
+
                                 <td>
                                     <input type="checkbox" class="check" value="{{ row.plan_id }}"
                                         data-company="{{ row.company }}">
                                 </td>
+
                                 <td>{{ loop.index }}</td>
                                 <td>{{ row.ship_month }}</td>
                                 <td>{{ row.vessel_name }}</td>
+
                                 <td>
                                     {% if row.color_name == 'green' %} 🟢 녹색
                                     {% elif row.color_name == 'blue' %} 🔵 파란
@@ -91,18 +102,40 @@
                                     {% else %} {{ row.color_name }}
                                     {% endif %}
                                 </td>
+
                                 <td>{{ row.steel_type }}</td>
                                 <td>{{ row.size_name }}</td>
                                 <td>{{ row.length_m }}</td>
+
                                 <td>{{ "{:,}".format(row.total_bundle) }}</td>
                                 <td>{{ "{:,.3f}".format(row.total_weight|float) }}</td>
+
                                 {% if row.total_bundle|float > 0 %}
-                                <td>{{ "{:,.3f}".format((row.total_weight|float) / (row.total_bundle|float)) }}</td>
+                                <td>
+                                    {{ "{:,.3f}".format(
+                                    (row.total_weight|float) / (row.total_bundle|float)
+                                    ) }}
+                                </td>
                                 {% else %}
                                 <td>0.000</td>
                                 {% endif %}
-                                <td>입고량, 잔량예정</td>
-                                <td title="{{ row.created_at }}">{{ row.created_at }}</td>
+
+                                <!-- 입고만 실제 값 -->
+                                <td>{{ "{:,.0f}".format(row.in_bundle|default(0, true)|float) }}</td>
+                                <td>{{ "{:,.3f}".format(row.in_weight|default(0, true)|float) }}</td>
+
+                                <!-- 나머지는 아직 임시 -->
+                                <td>선적수량</td>
+                                <td>선적톤</td>
+                                <td>반품수량</td>
+                                <td>반품톤</td>
+                                <td>잔량수량</td>
+                                <td>잔량톤</td>
+
+                                <td title="{{ row.created_at }}">
+                                    {{ row.created_at }}
+                                </td>
+
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -141,7 +174,14 @@
                                 <th>번들</th>
                                 <th>톤수</th>
                                 <th>단중</th>
-                                <th>비고사항</th>
+                                <th>입고수량</th>
+                                <th>입고톤량</th>
+                                <th>선적수량</th>
+                                <th>선적톤</th>
+                                <th>반품수량</th>
+                                <th>반품톤</th>
+                                <th>재고수량</th>
+                                <th>재고톤</th>
                                 <th>저장일시</th>
                             </tr>
                         </thead>
@@ -166,9 +206,23 @@
                                 <td>{{ "%.3f"|format(row.total_weight / row.total_bundle) }}</td>
                                 {% else %}
                                 <td>0.000</td>
-                                {% endif %}                                
-                                <td>입고량, 잔량예정</td>
-                                <td title="{{ row.created_at }}">{{ row.created_at }}</td>
+                                {% endif %}
+                                <!-- 입고만 실제 값 -->
+                                <td>{{ "{:,.0f}".format(row.in_bundle|default(0, true)|float) }}</td>
+                                <td>{{ "{:,.3f}".format(row.in_weight|default(0, true)|float) }}</td>
+
+                                <!-- 나머지는 아직 임시 -->
+                                <td>선적수량</td>
+                                <td>선적톤</td>
+                                <td>반품수량</td>
+                                <td>반품톤</td>
+                                <td>잔량수량</td>
+                                <td>잔량톤</td>
+
+                                <td title="{{ row.created_at }}">
+                                    {{ row.created_at }}
+                                </td>
+
                             </tr>
                             {% endfor %}
                         </tbody>

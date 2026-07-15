@@ -26,26 +26,35 @@ def main():
             d.size_name,
             d.steel_type,
             d.length_m,
-            IFNULL(SUM(d.bundle_qty), 0) AS total_bundle,
-            IFNULL(SUM(d.weight_mt), 0) AS total_weight,
-            MAX(d.created_at) AS created_at
+
+            IFNULL(d.bundle_qty, 0) AS total_bundle,
+            IFNULL(d.weight_mt, 0) AS total_weight,
+
+            IFNULL(i.in_bundle, 0) AS in_bundle,
+            IFNULL(i.in_weight, 0) AS in_weight,
+
+            d.created_at AS created_at
+
         FROM ship_m m
+
         JOIN plan_d d
             ON m.id = d.ship_id
-        WHERE m.company='hyundai'
-        GROUP BY
-            d.id,
-            m.id,
-            m.company,
-            m.ship_month,
-            m.vessel_name,
-            d.color_name,
-            d.size_name,
-            d.steel_type,
-            d.length_m
-        ORDER BY
-            MAX(d.created_at) DESC
+
+        LEFT JOIN (
+            SELECT
+                plan_id,
+                IFNULL(SUM(bundle_qty), 0) AS in_bundle,
+                IFNULL(SUM(weight_mt), 0) AS in_weight
+            FROM in_d
+            GROUP BY plan_id
+        ) i
+            ON d.id = i.plan_id
+
+        WHERE m.company = 'hyundai'
+
+        ORDER BY d.created_at DESC
     """)
+
     hyundai_list = cur.fetchall()
 
     # 동국제강
@@ -60,50 +69,81 @@ def main():
             d.size_name,
             d.steel_type,
             d.length_m,
-            IFNULL(SUM(d.bundle_qty), 0) AS total_bundle,
-            IFNULL(SUM(d.weight_mt), 0) AS total_weight,
-            MAX(d.created_at) AS created_at
+
+            IFNULL(d.bundle_qty, 0) AS total_bundle,
+            IFNULL(d.weight_mt, 0) AS total_weight,
+
+            IFNULL(i.in_bundle, 0) AS in_bundle,
+            IFNULL(i.in_weight, 0) AS in_weight,
+
+            d.created_at AS created_at
+
         FROM ship_m m
+
         JOIN plan_d d
             ON m.id = d.ship_id
-        WHERE m.company='dongkuk'
-        GROUP BY
-            d.id,
-            m.id,
-            m.company,
-            m.ship_month,
-            m.vessel_name,
-            d.color_name,
-            d.size_name,
-            d.steel_type,
-            d.length_m
-        ORDER BY
-            MAX(d.created_at) DESC
+
+        LEFT JOIN (
+            SELECT
+                plan_id,
+                IFNULL(SUM(bundle_qty), 0) AS in_bundle,
+                IFNULL(SUM(weight_mt), 0) AS in_weight
+            FROM in_d
+            GROUP BY plan_id
+        ) i
+            ON d.id = i.plan_id
+
+        WHERE m.company = 'dongkuk'
+
+        ORDER BY d.created_at DESC
     """)
+
     dongkuk_list = cur.fetchall()
 
-    # 합계
-    hyundai_total_bundle = sum(row["total_bundle"] for row in hyundai_list)
-    hyundai_total_weight = sum(row["total_weight"] for row in hyundai_list)
+    # 예정 합계
+    hyundai_total_bundle = sum(
+        row["total_bundle"] or 0
+        for row in hyundai_list
+    )
 
-    dongkuk_total_bundle = sum(row["total_bundle"] for row in dongkuk_list)
-    dongkuk_total_weight = sum(row["total_weight"] for row in dongkuk_list)
+    hyundai_total_weight = sum(
+        row["total_weight"] or 0
+        for row in hyundai_list
+    )
+
+    dongkuk_total_bundle = sum(
+        row["total_bundle"] or 0
+        for row in dongkuk_list
+    )
+
+    dongkuk_total_weight = sum(
+        row["total_weight"] or 0
+        for row in dongkuk_list
+    )
 
     cur.close()
     conn.close()
 
     return render_template(
         "out_dbar/main.html",
+
         hyundai_list=hyundai_list,
         dongkuk_list=dongkuk_list,
-        hyundai_cnt=len(set(row["ship_id"] for row in hyundai_list)),
-        dongkuk_cnt=len(set(row["ship_id"] for row in dongkuk_list)),
+
+        hyundai_cnt=len(
+            set(row["ship_id"] for row in hyundai_list)
+        ),
+
+        dongkuk_cnt=len(
+            set(row["ship_id"] for row in dongkuk_list)
+        ),
+
         hyundai_total_bundle=hyundai_total_bundle,
         hyundai_total_weight=hyundai_total_weight,
+
         dongkuk_total_bundle=dongkuk_total_bundle,
         dongkuk_total_weight=dongkuk_total_weight
     )
-
 
 @out_dbar_bp.route("/shipment_save", methods=["POST"])
 def shipment_save():
