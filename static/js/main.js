@@ -69,13 +69,18 @@ $(function () {
         );
 
     });
-
+    // 선적
+    // 선적
     $("#btnShip").click(function () {
 
         const id = getSelectedId();
         if (!id) return;
 
-        alert("선적 : " + id);
+        window.open(
+            "/out_dbar/ship?plan_id=" + id,
+            "ship",
+            "width=1500,height=750"
+        );
 
     });
 

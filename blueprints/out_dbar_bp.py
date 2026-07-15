@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template,jsonify,request
 from db import get_conn
+from datetime import date
 
 out_dbar_bp = Blueprint(
     "out_dbar",
@@ -497,3 +498,560 @@ def list_all():
         total_bundle=total_bundle,
         total_weight=total_weight
     )
+# =========================================================
+# 저장구역 문자열 정리
+# =========================================================
+def normalize_location(location_no):
+
+    value = str(location_no or "").strip()
+
+    return (
+        value
+        .replace(" ", "")
+        .replace("\t", "")
+        .replace("\n", "")
+        .replace("\r", "")
+        .replace("–", "-")
+        .replace("—", "-")
+        .replace("－", "-")
+    )
+
+
+# =========================================================
+# 선적 화면
+# =========================================================
+@out_dbar_bp.route("/ship")
+def ship():
+
+    plan_id = request.args.get("plan_id", type=int)
+
+    if not plan_id:
+        return "계획 정보가 없습니다.", 400
+
+    conn = get_conn()
+    cur = conn.cursor()
+
+    try:
+        # 품목 정보
+        cur.execute("""
+            SELECT
+                d.id AS plan_id,
+                m.vessel_name,
+                d.color_name,
+                d.steel_type,
+                d.size_name,
+                d.length_m
+            FROM plan_d d
+            JOIN ship_m m
+                ON d.ship_id = m.id
+            WHERE d.id = %s
+        """, (plan_id,))
+
+        plan = cur.fetchone()
+
+        if not plan:
+            return "해당 계획을 찾을 수 없습니다.", 404
+
+        # 저장구역 정규화 표현식
+        #
+        # 일반 공백, 탭, 줄바꿈, CR 제거
+        # 특수 하이픈을 일반 하이픈으로 통일
+        #
+        # 예:
+        # 5-2-L
+        # 5-2-L_
+        # 5－2－L
+        # 모두 5-2-L로 집계
+        location_expr_in = """
+            REPLACE(
+                REPLACE(
+                    REPLACE(
+                        REPLACE(
+                            REPLACE(
+                                REPLACE(
+                                    REPLACE(
+                                        TRIM(location_no),
+                                        ' ',
+                                        ''
+                                    ),
+                                    CHAR(9),
+                                    ''
+                                ),
+                                CHAR(10),
+                                ''
+                            ),
+                            CHAR(13),
+                            ''
+                        ),
+                        '–',
+                        '-'
+                    ),
+                    '—',
+                    '-'
+                ),
+                '－',
+                '-'
+            )
+        """
+
+        # 저장구역별 입고 / 선적 / 잔량 집계
+        sql = f"""
+            SELECT
+                i.location_no,
+
+                i.in_bundle,
+                i.in_weight,
+
+                IFNULL(o.ship_bundle, 0) AS ship_bundle,
+                IFNULL(o.ship_weight, 0) AS ship_weight,
+
+                i.in_bundle
+                    - IFNULL(o.ship_bundle, 0)
+                    AS remain_bundle,
+
+                i.in_weight
+                    - IFNULL(o.ship_weight, 0)
+                    AS remain_weight
+
+            FROM (
+                SELECT
+                    plan_id,
+
+                    {location_expr_in} AS location_no,
+
+                    IFNULL(SUM(bundle_qty), 0) AS in_bundle,
+                    IFNULL(SUM(weight_mt), 0) AS in_weight
+
+                FROM in_d
+
+                WHERE plan_id = %s
+
+                GROUP BY
+                    plan_id,
+                    {location_expr_in}
+            ) i
+
+            LEFT JOIN (
+                SELECT
+                    plan_id,
+
+                    {location_expr_in} AS location_no,
+
+                    IFNULL(SUM(bundle_qty), 0) AS ship_bundle,
+                    IFNULL(SUM(weight_mt), 0) AS ship_weight
+
+                FROM outbound_d
+
+                WHERE plan_id = %s
+                  AND outbound_type = '선적'
+
+                GROUP BY
+                    plan_id,
+                    {location_expr_in}
+            ) o
+                ON i.plan_id = o.plan_id
+               AND i.location_no = o.location_no
+
+            ORDER BY i.location_no
+        """
+
+        cur.execute(sql, (
+            plan_id,
+            plan_id
+        ))
+
+        location_list = cur.fetchall()
+
+        # 선적 이력
+        cur.execute("""
+            SELECT
+                id,
+                plan_id,
+                outbound_date,
+                outbound_type,
+                work_shift,
+                location_no,
+                bundle_qty,
+                weight_mt,
+                remark,
+                created_at
+            FROM outbound_d
+            WHERE plan_id = %s
+              AND outbound_type = '선적'
+            ORDER BY
+                outbound_date DESC,
+                created_at DESC,
+                id DESC
+        """, (plan_id,))
+
+        outbound_list = cur.fetchall()
+
+        return render_template(
+            "out_dbar/ship.html",
+            plan=plan,
+            location_list=location_list,
+            outbound_list=outbound_list,
+            today=date.today().strftime("%Y-%m-%d")
+        )
+
+    finally:
+        cur.close()
+        conn.close()
+
+
+# =========================================================
+# 선적 저장
+# =========================================================
+@out_dbar_bp.route("/ship/save", methods=["POST"])
+def ship_save():
+
+    data = request.get_json(silent=True) or {}
+
+    plan_id = data.get("plan_id")
+    outbound_date = data.get("out_date")
+    outbound_type = data.get("out_type", "선적")
+    work_shift = data.get("work_shift")
+
+    location_no = normalize_location(
+        data.get("location_no")
+    )
+
+    bundle_qty = data.get("bundle_qty")
+    weight_mt = data.get("weight_mt")
+    remark = str(data.get("remark", "")).strip()
+
+    try:
+        plan_id = int(plan_id)
+        bundle_qty = int(bundle_qty)
+        weight_mt = float(weight_mt)
+
+    except (TypeError, ValueError):
+        return jsonify({
+            "ok": False,
+            "message": "선적수량 또는 선적톤수가 올바르지 않습니다."
+        }), 400
+
+    if not outbound_date:
+        return jsonify({
+            "ok": False,
+            "message": "선적일자를 입력하세요."
+        }), 400
+
+    if outbound_type != "선적":
+        return jsonify({
+            "ok": False,
+            "message": "출고구분이 올바르지 않습니다."
+        }), 400
+
+    if work_shift not in ("주간", "야간"):
+        return jsonify({
+            "ok": False,
+            "message": "주간 또는 야간을 선택하세요."
+        }), 400
+
+    if not location_no:
+        return jsonify({
+            "ok": False,
+            "message": "저장구역을 선택하세요."
+        }), 400
+
+    if bundle_qty <= 0:
+        return jsonify({
+            "ok": False,
+            "message": "선적수량은 1 이상이어야 합니다."
+        }), 400
+
+    if weight_mt <= 0:
+        return jsonify({
+            "ok": False,
+            "message": "선적톤수는 0보다 커야 합니다."
+        }), 400
+
+    conn = get_conn()
+    cur = conn.cursor()
+
+    try:
+        cur.execute("""
+            INSERT INTO outbound_d
+            (
+                plan_id,
+                outbound_date,
+                outbound_type,
+                work_shift,
+                location_no,
+                bundle_qty,
+                weight_mt,
+                remark
+            )
+            VALUES
+            (
+                %s, %s, %s, %s,
+                %s, %s, %s, %s
+            )
+        """, (
+            plan_id,
+            outbound_date,
+            "선적",
+            work_shift,
+            location_no,
+            bundle_qty,
+            weight_mt,
+            remark
+        ))
+
+        conn.commit()
+
+        return jsonify({
+            "ok": True,
+            "message": "선적 저장 완료"
+        })
+
+    except Exception as e:
+        conn.rollback()
+
+        print("선적 저장 오류:", e)
+
+        return jsonify({
+            "ok": False,
+            "message": "선적 저장 중 오류가 발생했습니다."
+        }), 500
+
+    finally:
+        cur.close()
+        conn.close()
+
+
+# =========================================================
+# 선적 상세조회
+# =========================================================
+@out_dbar_bp.route("/ship/detail/<int:outbound_id>")
+def ship_detail(outbound_id):
+
+    conn = get_conn()
+    cur = conn.cursor()
+
+    try:
+        cur.execute("""
+            SELECT
+                id,
+                outbound_date,
+                outbound_type,
+                work_shift,
+                location_no,
+                bundle_qty,
+                weight_mt,
+                remark
+            FROM outbound_d
+            WHERE id = %s
+              AND outbound_type = '선적'
+        """, (outbound_id,))
+
+        row = cur.fetchone()
+
+        if not row:
+            return jsonify({
+                "ok": False,
+                "message": "선적 내역을 찾지 못했습니다."
+            }), 404
+
+        return jsonify({
+            "ok": True,
+            "id": row["id"],
+            "outbound_date": str(row["outbound_date"]),
+            "outbound_type": row["outbound_type"],
+            "work_shift": row["work_shift"],
+            "location_no": normalize_location(
+                row["location_no"]
+            ),
+            "bundle_qty": int(row["bundle_qty"] or 0),
+            "weight_mt": float(row["weight_mt"] or 0),
+            "remark": row["remark"] or ""
+        })
+
+    except Exception as e:
+        print("선적 상세 조회 오류:", e)
+
+        return jsonify({
+            "ok": False,
+            "message": "선적 정보를 불러오는 중 오류가 발생했습니다."
+        }), 500
+
+    finally:
+        cur.close()
+        conn.close()
+
+
+# =========================================================
+# 선적 수정
+# =========================================================
+@out_dbar_bp.route("/ship/update", methods=["POST"])
+def ship_update():
+
+    data = request.get_json(silent=True) or {}
+
+    outbound_id = data.get("id")
+    outbound_date = data.get("outbound_date")
+    work_shift = data.get("work_shift")
+
+    location_no = normalize_location(
+        data.get("location_no")
+    )
+
+    bundle_qty = data.get("bundle_qty")
+    weight_mt = data.get("weight_mt")
+    remark = str(data.get("remark", "")).strip()
+
+    try:
+        outbound_id = int(outbound_id)
+        bundle_qty = int(bundle_qty)
+        weight_mt = float(weight_mt)
+
+    except (TypeError, ValueError):
+        return jsonify({
+            "ok": False,
+            "message": "선적수량 또는 선적톤수가 올바르지 않습니다."
+        }), 400
+
+    if not outbound_date:
+        return jsonify({
+            "ok": False,
+            "message": "선적일자를 입력하세요."
+        }), 400
+
+    if work_shift not in ("주간", "야간"):
+        return jsonify({
+            "ok": False,
+            "message": "주간 또는 야간을 선택하세요."
+        }), 400
+
+    if not location_no:
+        return jsonify({
+            "ok": False,
+            "message": "저장구역 정보가 없습니다."
+        }), 400
+
+    if bundle_qty <= 0:
+        return jsonify({
+            "ok": False,
+            "message": "선적수량은 1 이상이어야 합니다."
+        }), 400
+
+    if weight_mt <= 0:
+        return jsonify({
+            "ok": False,
+            "message": "선적톤수는 0보다 커야 합니다."
+        }), 400
+
+    conn = get_conn()
+    cur = conn.cursor()
+
+    try:
+        cur.execute("""
+            SELECT id
+            FROM outbound_d
+            WHERE id = %s
+              AND outbound_type = '선적'
+        """, (outbound_id,))
+
+        exists = cur.fetchone()
+
+        if not exists:
+            return jsonify({
+                "ok": False,
+                "message": "수정할 선적 내역을 찾지 못했습니다."
+            }), 404
+
+        cur.execute("""
+            UPDATE outbound_d
+            SET
+                outbound_date = %s,
+                work_shift = %s,
+                location_no = %s,
+                bundle_qty = %s,
+                weight_mt = %s,
+                remark = %s
+            WHERE id = %s
+              AND outbound_type = '선적'
+        """, (
+            outbound_date,
+            work_shift,
+            location_no,
+            bundle_qty,
+            weight_mt,
+            remark,
+            outbound_id
+        ))
+
+        conn.commit()
+
+        return jsonify({
+            "ok": True,
+            "message": "선적 내역이 수정되었습니다."
+        })
+
+    except Exception as e:
+        conn.rollback()
+
+        print("선적 수정 오류:", e)
+
+        return jsonify({
+            "ok": False,
+            "message": "선적 수정 중 오류가 발생했습니다."
+        }), 500
+
+    finally:
+        cur.close()
+        conn.close()
+
+
+# =========================================================
+# 선적 삭제
+# =========================================================
+
+
+@out_dbar_bp.route("/ship/delete/<int:outbound_id>", methods=["POST"])
+def ship_delete(outbound_id):
+
+    conn = get_conn()
+    cur = conn.cursor()
+
+    try:
+
+        cur.execute("""
+            DELETE
+            FROM outbound_d
+            WHERE id = %s
+              AND outbound_type='선적'
+        """, (outbound_id,))
+
+        if cur.rowcount == 0:
+
+            conn.rollback()
+
+            return jsonify({
+                "ok": False,
+                "message": "삭제할 선적 내역이 없습니다."
+            }), 404
+
+        conn.commit()
+
+        return jsonify({
+            "ok": True,
+            "message": "선적 내역이 삭제되었습니다."
+        })
+
+    except Exception as e:
+
+        conn.rollback()
+
+        print("선적 삭제 오류 :", e)
+
+        return jsonify({
+            "ok": False,
+            "message": "삭제 중 오류가 발생했습니다."
+        }), 500
+
+    finally:
+
+        cur.close()
+        conn.close()

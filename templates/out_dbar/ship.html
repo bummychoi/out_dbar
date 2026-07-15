@@ -1,0 +1,1125 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <title>선적 등록</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #eeeeee;
+            font-family: "맑은 고딕", sans-serif;
+        }
+
+        .page {
+            width: 100%;
+        }
+
+        h1 {
+            margin: 0 0 15px;
+            color: #0d5d82;
+        }
+
+        h2 {
+            margin: 0 0 12px;
+            color: #0d5d82;
+            font-size: 22px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+            background: white;
+        }
+
+        th,
+        td {
+            height: 42px;
+            padding: 6px;
+            border: 1px solid #cccccc;
+            text-align: center;
+        }
+
+        th {
+            background: #0d5d82;
+            color: white;
+            font-size: 16px;
+        }
+
+        td {
+            font-size: 15px;
+        }
+
+        .info-table {
+            margin-bottom: 20px;
+        }
+
+        /* 저장구역 테이블 */
+        .location-table tbody tr:hover td {
+            background: #fff59d;
+            cursor: pointer;
+        }
+
+        .location-table tbody tr.selected td {
+            background: #f7c4ef;
+        }
+
+        /* 선적 입력 영역 */
+        .input-box {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+
+            width: 100%;
+            min-height: 86px;
+            margin-top: 20px;
+            padding: 14px 16px;
+
+            background: #fff;
+            border: 1px solid #ccc;
+
+            white-space: nowrap;
+        }
+
+        .input-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .input-label {
+            display: inline-block;
+            font-size: 16px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .input-group input[type="date"] {
+            width: 145px;
+            height: 42px;
+            padding: 4px 8px;
+
+            font-family: "맑은 고딕", sans-serif;
+            font-size: 15px;
+        }
+
+        .input-group input[type="number"] {
+            width: 140px;
+            height: 42px;
+            padding: 4px 8px;
+
+            font-family: "맑은 고딕", sans-serif;
+            font-size: 17px;
+            text-align: right;
+        }
+
+        .shift-group {
+            gap: 12px;
+        }
+
+        .radio-label {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+
+            font-size: 16px;
+            white-space: nowrap;
+            cursor: pointer;
+        }
+
+        .radio-label input[type="radio"] {
+            width: 20px;
+            height: 20px;
+            margin: 0;
+            cursor: pointer;
+        }
+
+        .selected-location {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            min-width: 90px;
+            height: 42px;
+            padding: 0 12px;
+
+            background: #eef5eb;
+            border: 1px solid #bbb;
+            border-radius: 4px;
+
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .button-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+
+        .all-btn,
+        .save-btn,
+        .edit-btn,
+        .delete-btn,
+        .update-btn,
+        .edit-cancel-btn {
+            border: 0;
+            border-radius: 6px;
+
+            color: #fff;
+            font-family: "맑은 고딕", sans-serif;
+            font-weight: 700;
+
+            white-space: nowrap;
+            cursor: pointer;
+        }
+
+        .all-btn,
+        .save-btn {
+            height: 44px;
+            padding: 0 18px;
+            font-size: 17px;
+        }
+
+        .all-btn {
+            background: #18a9e0;
+        }
+
+        .save-btn {
+            background: #0d5d82;
+        }
+
+        .all-btn:hover,
+        .save-btn:hover {
+            background: peru;
+        }
+
+        /* 선적 이력 */
+        .history-box {
+            margin-top: 20px;
+            padding: 15px;
+
+            background: #fff;
+            border: 1px solid #ccc;
+        }
+
+        .history-table th {
+            background: #0d5d82;
+        }
+
+        .history-table tbody tr:nth-child(odd) td {
+            background: #eef5eb;
+        }
+
+        .history-table tbody tr:nth-child(even) td {
+            background: #d7e9cf;
+        }
+
+        .history-table tbody tr:hover td {
+            background: #fff59d;
+        }
+
+        .history-table th:nth-child(1) {
+            width: 55px;
+        }
+
+        .history-table th:nth-child(2) {
+            width: 120px;
+        }
+
+        .history-table th:nth-child(3) {
+            width: 80px;
+        }
+
+        .history-table th:nth-child(4) {
+            width: 110px;
+        }
+
+        .history-table th:nth-child(5),
+        .history-table th:nth-child(6) {
+            width: 120px;
+        }
+
+        .history-table th:nth-child(7) {
+            width: 180px;
+        }
+
+        .history-table th:nth-child(8) {
+            width: 170px;
+        }
+
+        .history-table th:nth-child(9) {
+            width: 130px;
+        }
+
+        .edit-btn,
+        .delete-btn {
+            height: 32px;
+            padding: 0 10px;
+            font-size: 14px;
+        }
+
+        .edit-btn {
+            background: #0d5d82;
+        }
+
+        .delete-btn {
+            background: #dc2626;
+        }
+
+        .empty-row td {
+            height: 70px;
+            color: #777;
+            background: #fff !important;
+        }
+
+        /* 수정 영역 */
+        .edit-box {
+            display: none;
+            align-items: center;
+            gap: 14px;
+
+            width: 100%;
+            min-height: 82px;
+            margin-top: 12px;
+            padding: 14px 16px;
+
+            background: #fff8d6;
+            border: 2px solid #e0b600;
+            border-radius: 6px;
+
+            white-space: nowrap;
+        }
+
+        .edit-box.active {
+            display: flex;
+        }
+
+        .edit-group {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            flex-shrink: 0;
+        }
+
+        .edit-group label,
+        .edit-label {
+            font-size: 15px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .edit-group input[type="date"] {
+            width: 145px;
+            height: 40px;
+            padding: 4px 7px;
+
+            font-family: "맑은 고딕", sans-serif;
+            font-size: 15px;
+        }
+
+        .edit-group input[type="text"],
+        .edit-group input[type="number"] {
+            width: 140px;
+            height: 40px;
+            padding: 4px 8px;
+
+            font-family: "맑은 고딕", sans-serif;
+            font-size: 16px;
+        }
+
+        .edit-group input[type="number"] {
+            text-align: right;
+        }
+
+        .edit-group input[readonly] {
+            background: #eeeeee;
+            color: #555;
+        }
+
+        .shift-edit-group {
+            gap: 10px;
+        }
+
+        .edit-radio {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+        }
+
+        .edit-radio input[type="radio"] {
+            width: 18px;
+            height: 18px;
+            margin: 0;
+        }
+
+        .remark-group {
+            flex: 1;
+            min-width: 180px;
+        }
+
+        .remark-group input {
+            width: 100% !important;
+            min-width: 180px;
+        }
+
+        .update-btn,
+        .edit-cancel-btn {
+            height: 42px;
+            padding: 0 18px;
+            font-size: 16px;
+        }
+
+        .update-btn {
+            background: #0d5d82;
+        }
+
+        .edit-cancel-btn {
+            background: #777;
+        }
+
+        .update-btn:hover {
+            background: #06394f;
+        }
+
+        .edit-cancel-btn:hover {
+            background: #555;
+        }
+
+        @media screen and (max-width: 1200px) {
+
+            .input-box,
+            .edit-box {
+                flex-wrap: wrap;
+                row-gap: 12px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="page">
+
+        <h1>선적</h1>
+
+        <!-- 품목 정보 -->
+        <table class="info-table">
+            <thead>
+                <tr>
+                    <th>선적명</th>
+                    <th>단면색 / 배선번호</th>
+                    <th>강종</th>
+                    <th>사이즈</th>
+                    <th>길이</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr>
+                    <td>{{ plan.vessel_name }}</td>
+                    <td>{{ plan.color_name }}</td>
+                    <td>{{ plan.steel_type }}</td>
+                    <td>{{ plan.size_name }}</td>
+                    <td>{{ "{:,.2f}".format(plan.length_m|float) }}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- 저장구역별 집계 -->
+        <table class="location-table">
+            <thead>
+                <tr>
+                    <th>저장구역</th>
+                    <th>입고수량</th>
+                    <th>입고톤수</th>
+                    <th>선적수량</th>
+                    <th>잔량수량</th>
+                    <th>잔량톤수</th>
+                </tr>
+            </thead>
+
+            <tbody id="locationBody">
+
+                {% for row in location_list %}
+                <tr data-location="{{ row.location_no }}" data-remain-bundle="{{ row.remain_bundle }}"
+                    data-remain-weight="{{ row.remain_weight }}" onclick="selectLocation(this)">
+                    <td>{{ row.location_no }}</td>
+
+                    <td>
+                        {{ "{:,.0f}".format(row.in_bundle|float) }}
+                    </td>
+
+                    <td>
+                        {{ "{:,.3f}".format(row.in_weight|float) }}
+                    </td>
+
+                    <td>
+                        {{ "{:,.0f}".format(
+                        row.ship_bundle|default(0, true)|float
+                        ) }}
+                    </td>
+
+                    <td>
+                        {{ "{:,.0f}".format(
+                        row.remain_bundle|default(0, true)|float
+                        ) }}
+                    </td>
+
+                    <td>
+                        {{ "{:,.3f}".format(
+                        row.remain_weight|default(0, true)|float
+                        ) }}
+                    </td>
+                </tr>
+
+                {% else %}
+                <tr class="empty-row">
+                    <td colspan="6">
+                        등록된 저장구역 입고 내역이 없습니다.
+                    </td>
+                </tr>
+                {% endfor %}
+
+            </tbody>
+        </table>
+
+        <!-- 선적 입력 -->
+        <div class="input-box">
+
+            <input type="hidden" id="plan_id" value="{{ plan.plan_id }}">
+
+            <input type="hidden" id="location_no">
+
+            <div class="input-group">
+                <span class="input-label">선적일자</span>
+
+                <input type="date" id="out_date" value="{{ today }}">
+            </div>
+
+            <div class="input-group shift-group">
+
+                <span class="input-label">주야</span>
+
+                <label class="radio-label">
+                    <input type="radio" name="work_shift" value="주간">
+                    <span>주간</span>
+                </label>
+
+                <label class="radio-label">
+                    <input type="radio" name="work_shift" value="야간">
+                    <span>야간</span>
+                </label>
+
+            </div>
+
+            <div class="input-group">
+                <span class="input-label">선택구역</span>
+
+                <span id="selectedLocation" class="selected-location">
+                    선택 없음
+                </span>
+            </div>
+
+            <div class="input-group">
+                <label for="ship_bundle" class="input-label">
+                    선적수량
+                </label>
+
+                <input type="number" id="ship_bundle" min="1">
+            </div>
+
+            <div class="input-group">
+                <label for="ship_weight" class="input-label">
+                    선적톤수
+                </label>
+
+                <input type="number" id="ship_weight" min="0" step="0.001">
+            </div>
+
+            <div class="button-group">
+
+                <button type="button" class="all-btn" onclick="setAllQuantity()">
+                    전량
+                </button>
+
+                <button type="button" class="save-btn" onclick="saveShipment()">
+                    선적 저장
+                </button>
+
+            </div>
+
+        </div>
+
+        <!-- 선적 이력 -->
+        <div class="history-box">
+
+            <h2>선적 내역</h2>
+
+            <table class="history-table">
+
+                <thead>
+                    <tr>
+                        <th>순번</th>
+                        <th>선적일자</th>
+                        <th>주야</th>
+                        <th>저장구역</th>
+                        <th>선적수량</th>
+                        <th>선적톤수</th>
+                        <th>비고</th>
+                        <th>저장시간</th>
+                        <th>관리</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for row in outbound_list %}
+                    <tr>
+                        <td>
+                            {{ outbound_list|length - loop.index0 }}
+                        </td>
+
+                        <td>{{ row.outbound_date }}</td>
+                        <td>{{ row.work_shift }}</td>
+                        <td>{{ row.location_no }}</td>
+
+                        <td>
+                            {{ "{:,.0f}".format(
+                            row.bundle_qty|default(0, true)|float
+                            ) }}
+                        </td>
+
+                        <td>
+                            {{ "{:,.3f}".format(
+                            row.weight_mt|default(0, true)|float
+                            ) }}
+                        </td>
+
+                        <td>{{ row.remark or "" }}</td>
+                        <td>{{ row.created_at }}</td>
+
+                        <td>
+                            <button type="button" class="edit-btn" onclick="editShip('{{ row.id }}')">
+                                수정
+                            </button>
+
+                            <button type="button" class="delete-btn" onclick="deleteShip('{{ row.id }}')">
+                                삭제
+                            </button>
+                        </td>
+                    </tr>
+
+                    {% else %}
+                    <tr class="empty-row">
+                        <td colspan="9">
+                            저장된 선적 내역이 없습니다.
+                        </td>
+                    </tr>
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+            <!-- 수정 영역 -->
+            <div id="editBox" class="edit-box">
+
+                <input type="hidden" id="edit_id">
+
+                <div class="edit-group">
+                    <label for="edit_out_date">선적일자</label>
+                    <input type="date" id="edit_out_date">
+                </div>
+
+                <div class="edit-group shift-edit-group">
+
+                    <span class="edit-label">주야</span>
+
+                    <label class="edit-radio">
+                        <input type="radio" name="edit_work_shift" value="주간">
+                        주간
+                    </label>
+
+                    <label class="edit-radio">
+                        <input type="radio" name="edit_work_shift" value="야간">
+                        야간
+                    </label>
+
+                </div>
+
+                <div class="edit-group">
+                    <label for="edit_location">저장구역</label>
+                    <input type="text" id="edit_location" readonly>
+                </div>
+
+                <div class="edit-group">
+                    <label for="edit_bundle">선적수량</label>
+                    <input type="number" id="edit_bundle" min="1">
+                </div>
+
+                <div class="edit-group">
+                    <label for="edit_weight">선적톤수</label>
+                    <input type="number" id="edit_weight" min="0" step="0.001">
+                </div>
+
+                <div class="edit-group remark-group">
+                    <label for="edit_remark">비고</label>
+                    <input type="text" id="edit_remark">
+                </div>
+
+                <button type="button" class="update-btn" onclick="updateShip()">
+                    수정저장
+                </button>
+
+                <button type="button" class="edit-cancel-btn" onclick="closeEditBox()">
+                    취소
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <script>
+        let selectedRow = null;
+
+
+        function selectLocation(row) {
+
+            document.querySelectorAll(
+                ".location-table tbody tr"
+            ).forEach(function (item) {
+
+                item.classList.remove("selected");
+            });
+
+            row.classList.add("selected");
+            selectedRow = row;
+
+            const locationNo = row.dataset.location;
+
+            document.getElementById("location_no").value =
+                locationNo;
+
+            document.getElementById(
+                "selectedLocation"
+            ).textContent = locationNo;
+
+            document.getElementById("ship_bundle").value = "";
+            document.getElementById("ship_weight").value = "";
+        }
+
+
+        function setAllQuantity() {
+
+            if (!selectedRow) {
+                alert("저장구역을 선택하세요.");
+                return;
+            }
+
+            document.getElementById("ship_bundle").value =
+                selectedRow.dataset.remainBundle;
+
+            document.getElementById("ship_weight").value =
+                Number(
+                    selectedRow.dataset.remainWeight
+                ).toFixed(3);
+        }
+
+
+        function saveShipment() {
+
+            const planId =
+                document.getElementById("plan_id").value;
+
+            const outDate =
+                document.getElementById("out_date").value;
+
+            const workShiftElement =
+                document.querySelector(
+                    'input[name="work_shift"]:checked'
+                );
+
+            if (!workShiftElement) {
+                alert("주간 또는 야간을 선택하세요.");
+                return;
+            }
+
+            const workShift = workShiftElement.value;
+
+            const locationNo =
+                document.getElementById("location_no").value;
+
+            const bundleQty = Number(
+                document.getElementById("ship_bundle").value
+            );
+
+            const weightMt = Number(
+                document.getElementById("ship_weight").value
+            );
+
+            if (!outDate) {
+                alert("선적일자를 입력하세요.");
+                document.getElementById("out_date").focus();
+                return;
+            }
+
+            if (!selectedRow || !locationNo) {
+                alert("저장구역을 선택하세요.");
+                return;
+            }
+
+            if (
+                !Number.isInteger(bundleQty) ||
+                bundleQty <= 0
+            ) {
+                alert("선적수량을 올바르게 입력하세요.");
+                document.getElementById("ship_bundle").focus();
+                return;
+            }
+
+            if (
+                !Number.isFinite(weightMt) ||
+                weightMt <= 0
+            ) {
+                alert("선적톤수를 올바르게 입력하세요.");
+                document.getElementById("ship_weight").focus();
+                return;
+            }
+
+            const remainBundle = Number(
+                selectedRow.dataset.remainBundle
+            );
+
+            const remainWeight = Number(
+                selectedRow.dataset.remainWeight
+            );
+
+            if (bundleQty > remainBundle) {
+                alert(
+                    "잔량수량보다 많이 선적할 수 없습니다.\n" +
+                    "현재 잔량: " +
+                    remainBundle.toLocaleString() +
+                    " B/D"
+                );
+                return;
+            }
+
+            if (weightMt > remainWeight) {
+                alert(
+                    "잔량톤수보다 많이 선적할 수 없습니다.\n" +
+                    "현재 잔량: " +
+                    remainWeight.toFixed(3) +
+                    " M/T"
+                );
+                return;
+            }
+
+            const message =
+                "선적일자: " + outDate + "\n" +
+                "주야: " + workShift + "\n" +
+                "저장구역: " + locationNo + "\n" +
+                "선적수량: " +
+                bundleQty.toLocaleString() +
+                " B/D\n" +
+                "선적톤수: " +
+                weightMt.toFixed(3) +
+                " M/T\n\n" +
+                "선적 내역을 저장하시겠습니까?";
+
+            if (!confirm(message)) {
+                return;
+            }
+
+            fetch("/out_dbar/ship/save", {
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+                    plan_id: planId,
+                    out_date: outDate,
+                    out_type: "선적",
+                    work_shift: workShift,
+                    location_no: locationNo,
+                    bundle_qty: bundleQty,
+                    weight_mt: weightMt,
+                    remark: ""
+                })
+            })
+                .then(async function (response) {
+
+                    const result = await response.json();
+
+                    if (!response.ok) {
+                        throw new Error(
+                            result.message ||
+                            "선적 저장 중 오류가 발생했습니다."
+                        );
+                    }
+
+                    return result;
+                })
+                .then(function (result) {
+
+                    alert(
+                        result.message ||
+                        "선적 내역이 저장되었습니다."
+                    );
+
+                    location.reload();
+                })
+                .catch(function (error) {
+
+                    console.error("선적 저장 오류:", error);
+
+                    alert(
+                        error.message ||
+                        "선적 저장 중 오류가 발생했습니다."
+                    );
+                });
+        }
+
+
+        function editShip(id) {
+
+            fetch("/out_dbar/ship/detail/" + id)
+                .then(async function (response) {
+
+                    const row = await response.json();
+
+                    if (!response.ok) {
+                        throw new Error(
+                            row.message ||
+                            "수정 정보를 불러오지 못했습니다."
+                        );
+                    }
+
+                    return row;
+                })
+                .then(function (row) {
+
+                    document.getElementById("edit_id").value =
+                        row.id;
+
+                    document.getElementById("edit_out_date").value =
+                        row.outbound_date;
+
+                    document.querySelectorAll(
+                        'input[name="edit_work_shift"]'
+                    ).forEach(function (radio) {
+
+                        radio.checked =
+                            radio.value === row.work_shift;
+                    });
+
+                    document.getElementById("edit_location").value =
+                        row.location_no;
+
+                    document.getElementById("edit_bundle").value =
+                        row.bundle_qty;
+
+                    document.getElementById("edit_weight").value =
+                        Number(row.weight_mt).toFixed(3);
+
+                    document.getElementById("edit_remark").value =
+                        row.remark || "";
+
+                    document.getElementById("editBox")
+                        .classList.add("active");
+                })
+                .catch(function (error) {
+
+                    console.error(error);
+                    alert(error.message);
+                });
+        }
+
+
+        function closeEditBox() {
+
+            document.getElementById("editBox")
+                .classList.remove("active");
+
+            document.getElementById("edit_id").value = "";
+            document.getElementById("edit_out_date").value = "";
+            document.getElementById("edit_location").value = "";
+            document.getElementById("edit_bundle").value = "";
+            document.getElementById("edit_weight").value = "";
+            document.getElementById("edit_remark").value = "";
+
+            document.querySelectorAll(
+                'input[name="edit_work_shift"]'
+            ).forEach(function (radio) {
+
+                radio.checked = false;
+            });
+        }
+
+
+        function updateShip() {
+
+            const id =
+                document.getElementById("edit_id").value;
+
+            const outboundDate =
+                document.getElementById("edit_out_date").value;
+
+            const shiftElement =
+                document.querySelector(
+                    'input[name="edit_work_shift"]:checked'
+                );
+
+            const locationNo =
+                document.getElementById("edit_location").value.trim();
+
+            const bundleQty = Number(
+                document.getElementById("edit_bundle").value
+            );
+
+            const weightMt = Number(
+                document.getElementById("edit_weight").value
+            );
+
+            const remark =
+                document.getElementById("edit_remark").value.trim();
+
+            if (!id) {
+                alert("수정할 내역을 선택하세요.");
+                return;
+            }
+
+            if (!outboundDate) {
+                alert("선적일자를 입력하세요.");
+                return;
+            }
+
+            if (!shiftElement) {
+                alert("주간 또는 야간을 선택하세요.");
+                return;
+            }
+
+            if (
+                !Number.isInteger(bundleQty) ||
+                bundleQty <= 0
+            ) {
+                alert("선적수량을 올바르게 입력하세요.");
+                return;
+            }
+
+            if (
+                !Number.isFinite(weightMt) ||
+                weightMt <= 0
+            ) {
+                alert("선적톤수를 올바르게 입력하세요.");
+                return;
+            }
+
+            if (!confirm("선적 내역을 수정할까요?")) {
+                return;
+            }
+
+            fetch("/out_dbar/ship/update", {
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+                    id: id,
+                    outbound_date: outboundDate,
+                    work_shift: shiftElement.value,
+                    location_no: locationNo,
+                    bundle_qty: bundleQty,
+                    weight_mt: weightMt,
+                    remark: remark
+                })
+            })
+                .then(async function (response) {
+
+                    const result = await response.json();
+
+                    if (!response.ok) {
+                        throw new Error(
+                            result.message ||
+                            "수정 중 오류가 발생했습니다."
+                        );
+                    }
+
+                    return result;
+                })
+                .then(function (result) {
+
+                    alert(
+                        result.message ||
+                        "선적 내역이 수정되었습니다."
+                    );
+
+                    location.reload();
+                })
+                .catch(function (error) {
+
+                    console.error(error);
+                    alert(error.message);
+                });
+        }
+
+
+        function deleteShip(id) {
+
+            if (!confirm("선적 내역을 삭제하시겠습니까?")) {
+                return;
+            }
+
+            fetch("/out_dbar/ship/delete/" + id, {
+                method: "POST"
+            })
+                .then(async function (response) {
+
+                    const result = await response.json();
+
+                    if (!response.ok) {
+                        throw new Error(
+                            result.message ||
+                            "삭제 중 오류가 발생했습니다."
+                        );
+                    }
+
+                    return result;
+                })
+                .then(function (result) {
+
+                    alert(result.message);
+
+                    location.reload();
+
+                })
+                .catch(function (error) {
+
+                    console.error(error);
+
+                    alert(error.message);
+
+                });
+
+        }
+    </script>
+
+</body>
+
+</html>
