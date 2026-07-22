@@ -16,7 +16,7 @@ app.register_blueprint(dongkuk_bp)
 
 
 def open_browser():
-    url = "http://127.0.0.1:8800/out_dbar/"
+    url = "http://127.0.0.1:5001/out_dbar/"
 
     chrome_paths = [
         r"C:\Program Files\Google\Chrome\Application\chrome.exe",
@@ -36,7 +36,7 @@ if __name__ == "__main__":
 
     app.run(
         host="127.0.0.1",
-        port=8800,
+        port=5001,
         debug=True,
         use_reloader=False
     )

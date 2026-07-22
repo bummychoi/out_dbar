@@ -6,6 +6,7 @@ let isConfirming = false;
 
 $(function () {
 
+
     // datepicker 기본 설정
     $.datepicker.setDefaults({
         dateFormat: "yy-mm-dd",
@@ -359,8 +360,15 @@ function saveIn() {
 
                 clearInputRow();
 
+                // 입고 팝업 재조회
                 loadInList();
                 loadTotalSummary();
+
+                // 메인 화면 새로고침 신호
+                localStorage.setItem(
+                    "outDbarRefresh",
+                    String(Date.now())
+                );
 
             } else {
 
@@ -765,6 +773,12 @@ function updateIn(url) {
                 loadInList();
                 loadTotalSummary();
 
+                 // 메인 화면 새로고침 신호
+                localStorage.setItem(
+                    "outDbarRefresh",
+                    String(Date.now())
+                );
+
             } else {
 
                 alert(
@@ -816,6 +830,12 @@ function deleteIn() {
 
                 loadInList();
                 loadTotalSummary();
+
+                 // 메인 화면 새로고침 신호
+                localStorage.setItem(
+                    "outDbarRefresh",
+                    String(Date.now())
+                );
 
             } else {
 

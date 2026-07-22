@@ -1,5 +1,14 @@
 $(function () {
 
+    // 입고 저장 완료 시 메인 현황판 새로고침
+    window.addEventListener("storage", function (e) {
+
+        if (e.key === "outDbarRefresh") {
+            window.location.reload();
+        }
+    });
+
+
     let currentDate = new Date();
 
     function formatToday(date) {
@@ -43,6 +52,7 @@ $(function () {
         return checked.val();
     }
 
+
     // 입고 팝업
     $("#btnIn").click(function () {
 
@@ -59,17 +69,29 @@ $(function () {
         const width = Math.min(1900, screen.availWidth - 20);
         const height = Math.min(1100, screen.availHeight - 40);
 
-        const left = Math.round((screen.availWidth - width) / 2);
-        const top = Math.round((screen.availHeight - height) / 2);
+        const left = Math.round(
+            (screen.availWidth - width) / 2
+        );
 
-        window.open(
-            "/out_dbar/" + company + "/in?ship_id=" + id,
+        const top = Math.round(
+            (screen.availHeight - height) / 2
+        );
+
+        const inPopup = window.open(
+            "/out_dbar/" + company + "/in?ship_id=" +
+            encodeURIComponent(id),
             "inPopup",
             `width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=yes`
         );
 
+        if (!inPopup) {
+            alert("팝업이 차단되었습니다.");
+            return;
+        }
+
+        inPopup.focus();
     });
-    // 선적
+
     // 선적
     $("#btnShip").click(function () {
 

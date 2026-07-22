@@ -34,6 +34,24 @@ def main():
             IFNULL(i.in_bundle, 0) AS in_bundle,
             IFNULL(i.in_weight, 0) AS in_weight,
 
+            IFNULL(o.ship_bundle, 0) AS ship_bundle,
+            IFNULL(o.ship_weight, 0) AS ship_weight,
+
+            IFNULL(o.return_bundle, 0) AS return_bundle,
+            IFNULL(o.return_weight, 0) AS return_weight,
+
+            (
+                IFNULL(i.in_bundle, 0)
+                - IFNULL(o.ship_bundle, 0)
+                - IFNULL(o.return_bundle, 0)
+            ) AS stock_bundle,
+
+            (
+                IFNULL(i.in_weight, 0)
+                - IFNULL(o.ship_weight, 0)
+                - IFNULL(o.return_weight, 0)
+            ) AS stock_weight,
+
             d.created_at AS created_at
 
         FROM ship_m m
@@ -44,12 +62,53 @@ def main():
         LEFT JOIN (
             SELECT
                 plan_id,
-                IFNULL(SUM(bundle_qty), 0) AS in_bundle,
-                IFNULL(SUM(weight_mt), 0) AS in_weight
+                SUM(bundle_qty) AS in_bundle,
+                SUM(weight_mt) AS in_weight
             FROM in_d
             GROUP BY plan_id
         ) i
             ON d.id = i.plan_id
+
+        LEFT JOIN (
+            SELECT
+                plan_id,
+
+                SUM(
+                    CASE
+                        WHEN outbound_type = '선적'
+                        THEN bundle_qty
+                        ELSE 0
+                    END
+                ) AS ship_bundle,
+
+                SUM(
+                    CASE
+                        WHEN outbound_type = '선적'
+                        THEN weight_mt
+                        ELSE 0
+                    END
+                ) AS ship_weight,
+
+                SUM(
+                    CASE
+                        WHEN outbound_type = '반품'
+                        THEN bundle_qty
+                        ELSE 0
+                    END
+                ) AS return_bundle,
+
+                SUM(
+                    CASE
+                        WHEN outbound_type = '반품'
+                        THEN weight_mt
+                        ELSE 0
+                    END
+                ) AS return_weight
+
+            FROM outbound_d
+            GROUP BY plan_id
+        ) o
+            ON d.id = o.plan_id
 
         WHERE m.company = 'hyundai'
 
@@ -77,6 +136,24 @@ def main():
             IFNULL(i.in_bundle, 0) AS in_bundle,
             IFNULL(i.in_weight, 0) AS in_weight,
 
+            IFNULL(o.ship_bundle, 0) AS ship_bundle,
+            IFNULL(o.ship_weight, 0) AS ship_weight,
+
+            IFNULL(o.return_bundle, 0) AS return_bundle,
+            IFNULL(o.return_weight, 0) AS return_weight,
+
+            (
+                IFNULL(i.in_bundle, 0)
+                - IFNULL(o.ship_bundle, 0)
+                - IFNULL(o.return_bundle, 0)
+            ) AS stock_bundle,
+
+            (
+                IFNULL(i.in_weight, 0)
+                - IFNULL(o.ship_weight, 0)
+                - IFNULL(o.return_weight, 0)
+            ) AS stock_weight,
+
             d.created_at AS created_at
 
         FROM ship_m m
@@ -87,12 +164,53 @@ def main():
         LEFT JOIN (
             SELECT
                 plan_id,
-                IFNULL(SUM(bundle_qty), 0) AS in_bundle,
-                IFNULL(SUM(weight_mt), 0) AS in_weight
+                SUM(bundle_qty) AS in_bundle,
+                SUM(weight_mt) AS in_weight
             FROM in_d
             GROUP BY plan_id
         ) i
             ON d.id = i.plan_id
+
+        LEFT JOIN (
+            SELECT
+                plan_id,
+
+                SUM(
+                    CASE
+                        WHEN outbound_type = '선적'
+                        THEN bundle_qty
+                        ELSE 0
+                    END
+                ) AS ship_bundle,
+
+                SUM(
+                    CASE
+                        WHEN outbound_type = '선적'
+                        THEN weight_mt
+                        ELSE 0
+                    END
+                ) AS ship_weight,
+
+                SUM(
+                    CASE
+                        WHEN outbound_type = '반품'
+                        THEN bundle_qty
+                        ELSE 0
+                    END
+                ) AS return_bundle,
+
+                SUM(
+                    CASE
+                        WHEN outbound_type = '반품'
+                        THEN weight_mt
+                        ELSE 0
+                    END
+                ) AS return_weight
+
+            FROM outbound_d
+            GROUP BY plan_id
+        ) o
+            ON d.id = o.plan_id
 
         WHERE m.company = 'dongkuk'
 
@@ -145,6 +263,7 @@ def main():
         dongkuk_total_bundle=dongkuk_total_bundle,
         dongkuk_total_weight=dongkuk_total_weight
     )
+
 
 @out_dbar_bp.route("/shipment_save", methods=["POST"])
 def shipment_save():

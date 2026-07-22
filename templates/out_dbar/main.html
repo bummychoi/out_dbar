@@ -123,14 +123,28 @@
                                 <!-- 입고만 실제 값 -->
                                 <td>{{ "{:,.0f}".format(row.in_bundle|default(0, true)|float) }}</td>
                                 <td>{{ "{:,.3f}".format(row.in_weight|default(0, true)|float) }}</td>
+                                <!-- 선적수량 -->
+                                <td>{{ "{:,.0f}".format(row.ship_bundle|default(0, true)|float) }}</td>
+                                <td>{{ "{:,.3f}".format(row.ship_weight|default(0, true)|float) }}</td>
+                                <!-- 반품수량 -->
+                                <td>{{ "{:,.0f}".format(row.return_bundle|default(0, true)|float) }}</td>
+                                <td>{{ "{:,.3f}".format(row.return_weight|default(0, true)|float) }}</td>
 
-                                <!-- 나머지는 아직 임시 -->
-                                <td>선적수량</td>
-                                <td>선적톤</td>
-                                <td>반품수량</td>
-                                <td>반품톤</td>
-                                <td>잔량수량</td>
-                                <td>잔량톤</td>
+                                <!-- 잔량 -->
+                                <td>
+                                    {{ "{:,.0f}".format(
+                                    (row.in_bundle|default(0, true)|float)
+                                    - (row.ship_bundle|default(0, true)|float)
+                                    - (row.return_bundle|default(0, true)|float)
+                                    ) }}
+                                </td>
+                                <td>
+                                    {{ "{:,.3f}".format(
+                                    (row.in_weight|default(0, true)|float)
+                                    - (row.ship_weight|default(0, true)|float)
+                                    - (row.return_weight|default(0, true)|float)
+                                    ) }}
+                                </td>
 
                                 <td title="{{ row.created_at }}">
                                     {{ row.created_at }}
@@ -189,10 +203,12 @@
                         <tbody>
                             {% for row in dongkuk_list %}
                             <tr ondblclick="openPlan('{{ row.ship_id }}')">
+
                                 <td>
                                     <input type="checkbox" class="check" value="{{ row.plan_id }}"
                                         data-company="{{ row.company }}">
                                 </td>
+
                                 <td>{{ loop.index }}</td>
                                 <td>{{ row.ship_month }}</td>
                                 <td>{{ row.vessel_name }}</td>
@@ -200,24 +216,78 @@
                                 <td>{{ row.steel_type }}</td>
                                 <td>{{ row.size_name }}</td>
                                 <td>{{ row.length_m }}</td>
-                                <td>{{ "{:,}".format(row.total_bundle) }}</td>
-                                <td>{{ "{:,.3f}".format(row.total_weight) }}</td>
+
+                                <!-- 예정 -->
+                                <td>{{ "{:,.0f}".format(row.total_bundle|float) }}</td>
+                                <td>{{ "{:,.3f}".format(row.total_weight|float) }}</td>
+
+                                <!-- 단중 -->
                                 {% if row.total_bundle|float > 0 %}
-                                <td>{{ "%.3f"|format(row.total_weight / row.total_bundle) }}</td>
+                                <td>
+                                    {{ "{:,.3f}".format(
+                                    (row.total_weight|float) /
+                                    (row.total_bundle|float)
+                                    ) }}
+                                </td>
                                 {% else %}
                                 <td>0.000</td>
                                 {% endif %}
-                                <!-- 입고만 실제 값 -->
-                                <td>{{ "{:,.0f}".format(row.in_bundle|default(0, true)|float) }}</td>
-                                <td>{{ "{:,.3f}".format(row.in_weight|default(0, true)|float) }}</td>
 
-                                <!-- 나머지는 아직 임시 -->
-                                <td>선적수량</td>
-                                <td>선적톤</td>
-                                <td>반품수량</td>
-                                <td>반품톤</td>
-                                <td>잔량수량</td>
-                                <td>잔량톤</td>
+                                <!-- 입고 -->
+                                <td>
+                                    {{ "{:,.0f}".format(
+                                    row.in_bundle|default(0, true)|float
+                                    ) }}
+                                </td>
+
+                                <td>
+                                    {{ "{:,.3f}".format(
+                                    row.in_weight|default(0, true)|float
+                                    ) }}
+                                </td>
+
+                                <!-- 선적 -->
+                                <td>
+                                    {{ "{:,.0f}".format(
+                                    row.ship_bundle|default(0, true)|float
+                                    ) }}
+                                </td>
+
+                                <td>
+                                    {{ "{:,.3f}".format(
+                                    row.ship_weight|default(0, true)|float
+                                    ) }}
+                                </td>
+
+                                <!-- 반품 -->
+                                <td>
+                                    {{ "{:,.0f}".format(
+                                    row.return_bundle|default(0, true)|float
+                                    ) }}
+                                </td>
+
+                                <td>
+                                    {{ "{:,.3f}".format(
+                                    row.return_weight|default(0, true)|float
+                                    ) }}
+                                </td>
+
+                                <!-- 잔량 = 입고 - 선적 - 반품 -->
+                                <td>
+                                    {{ "{:,.0f}".format(
+                                    (row.in_bundle|default(0, true)|float)
+                                    - (row.ship_bundle|default(0, true)|float)
+                                    - (row.return_bundle|default(0, true)|float)
+                                    ) }}
+                                </td>
+
+                                <td>
+                                    {{ "{:,.3f}".format(
+                                    (row.in_weight|default(0, true)|float)
+                                    - (row.ship_weight|default(0, true)|float)
+                                    - (row.return_weight|default(0, true)|float)
+                                    ) }}
+                                </td>
 
                                 <td title="{{ row.created_at }}">
                                     {{ row.created_at }}
@@ -225,6 +295,7 @@
 
                             </tr>
                             {% endfor %}
+
                         </tbody>
                     </table>
                 </div>
