@@ -570,6 +570,98 @@ def list_all():
     cur.execute(sql, tuple(params))
     rows = cur.fetchall()
 
+
+
+ # =========================
+    # 저장구역 · 강종 · 사이즈별 소계
+    # =========================
+    location_sql = """
+        SELECT
+            i.location_no,
+            p.steel_type,
+            p.size_name,
+            COUNT(*) AS truck_cnt,
+            IFNULL(SUM(i.bundle_qty), 0) AS bundle_qty,
+            IFNULL(SUM(i.weight_mt), 0) AS weight_mt
+
+        FROM in_d i
+
+        JOIN plan_d p
+            ON i.plan_id = p.id
+
+        WHERE i.in_date = %s
+    """
+
+    location_params = [in_date]
+
+    if work_type:
+        location_sql += " AND i.work_type = %s"
+        location_params.append(work_type)
+
+    if company:
+        location_sql += " AND p.company = %s"
+        location_params.append(company)
+
+    location_sql += """
+        GROUP BY
+            i.location_no,
+            p.steel_type,
+            p.size_name
+
+        ORDER BY
+            i.location_no,
+            p.steel_type,
+            p.size_name
+    """
+
+    cur.execute(location_sql, tuple(location_params))
+    raw_location_rows = cur.fetchall()
+
+    # 공백·특수 하이픈 차이까지 같은 구역으로 합산
+    location_map = {}
+
+    for row in raw_location_rows:
+
+        location_no = normalize_location(row["location_no"])
+
+        if not location_no:
+            location_no = "미지정"
+
+        steel_type = str(row["steel_type"] or "").strip()
+        size_name = str(row["size_name"] or "").strip()
+
+        # 저장구역, 강종, 사이즈가 모두 같을 때 합산
+        key = (
+            location_no,
+            steel_type,
+            size_name
+        )
+
+        if key not in location_map:
+            location_map[key] = {
+                "location_no": location_no,
+                "steel_type": steel_type,
+                "size_name": size_name,
+                "truck_cnt": 0,
+                "bundle_qty": 0,
+                "weight_mt": 0
+            }
+
+        location_map[key]["truck_cnt"] += int(
+            row["truck_cnt"] or 0
+        )
+
+        location_map[key]["bundle_qty"] += int(
+            row["bundle_qty"] or 0
+        )
+
+        location_map[key]["weight_mt"] += float(
+            row["weight_mt"] or 0
+        )
+
+    location_rows = list(location_map.values())
+    
+
     # =========================
     # 상단 전체 합계
     # =========================
@@ -613,6 +705,7 @@ def list_all():
         work_type=work_type,
         company=company,
         rows=rows,
+        location_rows=location_rows,
         total_truck=total_truck,
         total_bundle=total_bundle,
         total_weight=total_weight

@@ -79,46 +79,70 @@ total_truck
         </header>
 
 
-        <!-- 전체 합계 -->
-        <section class="summary-box">
+        <!-- 전체 합계 카드 -->
+        <div class="summary-cards">
 
             <div class="summary-card">
-                <span class="summary-title">차량대수</span>
-
-                <div class="summary-value">
-                    <strong id="total_truck">
-                        {{ "{:,.0f}".format(total_truck | default(0)) }}
-                    </strong>
-                    <span>대</span>
-                </div>
+                차량대수
+                <strong>{{ total_truck }}</strong> 대
             </div>
 
             <div class="summary-card">
-                <span class="summary-title">입고수량</span>
-
-                <div class="summary-value">
-                    <strong id="total_bundle">
-                        {{ "{:,.0f}".format(total_bundle | default(0)) }}
-                    </strong>
-                    <span>B/D</span>
-                </div>
+                입고수량
+                <strong>{{ "{:,.0f}".format(total_bundle) }}</strong> B/D
             </div>
 
             <div class="summary-card">
-                <span class="summary-title">입고톤수</span>
-
-                <div class="summary-value">
-                    <strong id="total_weight">
-                        {{ "{:,.3f}".format(total_weight | default(0)) }}
-                    </strong>
-                    <span>MT</span>
-                </div>
+                입고톤수
+                <strong>{{ "{:,.3f}".format(total_weight) }}</strong> MT
             </div>
+
+        </div>
+
+        <!-- 저장구역별 소계 -->
+        <section class="location-summary">
+
+            <div class="location-summary-title">
+                <strong>저장구역별 소계</strong>
+                <span>총 {{ location_rows|length }}개 구역</span>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>저장구역</th>
+                        <th>강종</th>
+                        <th>사이즈</th>
+                        <th>차량대수</th>
+                        <th>입고수량</th>
+                        <th>입고톤수</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for row in location_rows %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ row.location_no }}</td>
+                        <td>{{ row.steel_type }}</td>
+                        <td>{{ row.size_name }}</td>
+                        <td>{{ row.truck_cnt }}</td>
+                        <td>{{ "{:,.0f}".format(row.bundle_qty) }}</td>
+                        <td>{{ "{:,.3f}".format(row.weight_mt) }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5">조회된 저장구역이 없습니다.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
 
         </section>
 
+        <!-- 기존 입고 집계내역 -->
 
-        <!-- 조회 결과 -->
         <main class="result-box">
 
             <div class="result-header">

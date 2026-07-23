@@ -172,18 +172,30 @@ table {
     flex-shrink: 0;
 }
 
+.summary-cards {
+    display: flex;
+    width: 100%;
+    gap: 10px;
+    padding: 10px 12px;
+}
+
 .summary-card {
+    flex: 1;
+    min-width: 0;
+    height: 78px;
+
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 28px;
-
-    height: 78px;
-    padding: 10px 20px;
+    gap: 18px;
 
     background: #fff;
-    border: 1px solid #ccc;
+    border: 1px solid #c9c9c9;
     border-radius: 6px;
+}
+
+.summary-card strong {
+    font-size: 26px;
 }
 
 .summary-title {
@@ -456,4 +468,56 @@ table {
 
 .result-table tbody tr:not(.empty-row):hover {
     background: #eaf3ff;
+}
+
+
+.location-summary {
+    margin: 10px 12px;
+    background: #fff;
+    border: 1px solid #c9c9c9;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.location-summary-title {
+    height: 48px;
+    padding: 0 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #c9c9c9;
+    font-size: 16px;
+}
+
+.location-summary table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+.location-summary th {
+    height: 34px;
+    background: #e8eef7;
+    border-right: 1px solid #c9c9c9;
+    border-bottom: 1px solid #c9c9c9;
+    text-align: center;
+}
+
+.location-summary td {
+    height: 36px;
+    border-right: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+    text-align: center;
+}
+
+.location-summary th:first-child {
+    width: 60px;
+}
+
+.location-summary th:nth-child(2) {
+    width: 25%;
+}
+
+.location-summary tr:last-child td {
+    border-bottom: 0;
 }
