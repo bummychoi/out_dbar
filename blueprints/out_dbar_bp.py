@@ -580,6 +580,7 @@ def list_all():
             i.location_no,
             p.steel_type,
             p.size_name,
+            p.length_m,
             COUNT(*) AS truck_cnt,
             IFNULL(SUM(i.bundle_qty), 0) AS bundle_qty,
             IFNULL(SUM(i.weight_mt), 0) AS weight_mt
@@ -606,12 +607,14 @@ def list_all():
         GROUP BY
             i.location_no,
             p.steel_type,
-            p.size_name
+            p.size_name,
+            p.length_m
 
         ORDER BY
             i.location_no,
             p.steel_type,
-            p.size_name
+            p.size_name,
+            p.length_m
     """
 
     cur.execute(location_sql, tuple(location_params))
@@ -629,12 +632,14 @@ def list_all():
 
         steel_type = str(row["steel_type"] or "").strip()
         size_name = str(row["size_name"] or "").strip()
+        length_m = float(row["length_m"] or 0)
 
         # 저장구역, 강종, 사이즈가 모두 같을 때 합산
         key = (
             location_no,
             steel_type,
-            size_name
+            size_name,
+            length_m
         )
 
         if key not in location_map:
@@ -642,6 +647,7 @@ def list_all():
                 "location_no": location_no,
                 "steel_type": steel_type,
                 "size_name": size_name,
+                "length_m": length_m,
                 "truck_cnt": 0,
                 "bundle_qty": 0,
                 "weight_mt": 0

@@ -114,6 +114,7 @@ total_truck
                         <th>저장구역</th>
                         <th>강종</th>
                         <th>사이즈</th>
+                        <th>길이</th>
                         <th>차량대수</th>
                         <th>입고수량</th>
                         <th>입고톤수</th>
@@ -127,6 +128,7 @@ total_truck
                         <td>{{ row.location_no }}</td>
                         <td>{{ row.steel_type }}</td>
                         <td>{{ row.size_name }}</td>
+                        <td>{{ "{:g}".format(row.length_m) }}m</td>
                         <td>{{ row.truck_cnt }}</td>
                         <td>{{ "{:,.0f}".format(row.bundle_qty) }}</td>
                         <td>{{ "{:,.3f}".format(row.weight_mt) }}</td>
